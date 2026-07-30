@@ -1,0 +1,161 @@
+groups:
+  # ──────────────────────────────────────────────────────────
+  # SERVICE AVAILABILITY
+  # ──────────────────────────────────────────────────────────
+  - name: service_availability
+    interval: 30s
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.job }} is DOWN"
+          description: >
+            Service {{ $labels.job }} has been unreachable for more than 1 minute.
+            Prometheus target: {{ $labels.instance }}.
+            Immediate investigation required.
+
+  # ──────────────────────────────────────────────────────────
+  # LATENCY
+  # ──────────────────────────────────────────────────────────
+  - name: latency
+    interval: 30s
+    rules:
+      - alert: HighP95Latency
+        expr: >
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (job, le)
+          ) > 0.2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High P95 latency on {{ $labels.job }}"
+          description: >
+            Service {{ $labels.job }} P95 latency is {{ $value | humanizeDuration }}.
+            Threshold: 200ms. SLA target is sub-200ms end-to-end scoring.
+
+      - alert: CriticalP99Latency
+        expr: >
+          histogram_quantile(0.99,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (job, le)
+          ) > 0.5
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "P99 latency critical on {{ $labels.job }}"
+          description: >
+            Service {{ $labels.job }} P99 latency is {{ $value | humanizeDuration }}.
+            This indicates severe performance degradation.
+
+  # ──────────────────────────────────────────────────────────
+  # ERROR RATE
+  # ──────────────────────────────────────────────────────────
+  - name: error_rate
+    interval: 30s
+    rules:
+      - alert: HighErrorRate
+        expr: >
+          sum(rate(http_requests_total{status=~"5.."}[5m])) by (job)
+          /
+          sum(rate(http_requests_total[5m])) by (job)
+          > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Error rate > 5% on {{ $labels.job }}"
+          description: >
+            {{ $labels.job }} error rate is {{ $value | humanizePercentage }}.
+            More than 5% of requests are returning HTTP 5xx responses.
+
+  # ──────────────────────────────────────────────────────────
+  # POSTGRESQL
+  # ──────────────────────────────────────────────────────────
+  - name: postgresql
+    interval: 60s
+    rules:
+      - alert: PostgreSQLConnectionsHigh
+        expr: pg_stat_database_numbackends{datname="muleguard"} > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PostgreSQL connections high: {{ $value }}/100"
+          description: >
+            The muleguard database has {{ $value }} active connections.
+            Default max_connections is 100. Risk of connection exhaustion.
+
+      - alert: PostgreSQLDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL is unreachable"
+          description: >
+            The PostgreSQL exporter cannot connect to the database.
+            All scoring decisions will fail until this is resolved.
+
+  # ──────────────────────────────────────────────────────────
+  # REDIS
+  # ──────────────────────────────────────────────────────────
+  - name: redis
+    interval: 30s
+    rules:
+      - alert: RedisMemoryHigh
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis memory at {{ $value | humanizePercentage }}"
+          description: >
+            Redis memory utilisation is above 85%.
+            Feature store cache evictions will increase, raising feature retrieval latency.
+
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is unreachable"
+          description: >
+            Redis is down. Feature retrieval will fail.
+            The scoring pipeline will operate in degraded mode (no pre-computed features).
+
+  # ──────────────────────────────────────────────────────────
+  # JVM (SCORING ORCHESTRATOR)
+  # ──────────────────────────────────────────────────────────
+  - name: jvm
+    interval: 30s
+    rules:
+      - alert: JVMHeapHigh
+        expr: >
+          jvm_memory_used_bytes{job="scoring-orchestrator", area="heap"}
+          /
+          jvm_memory_max_bytes{job="scoring-orchestrator", area="heap"}
+          > 0.80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Scoring orchestrator JVM heap at {{ $value | humanizePercentage }}"
+          description: >
+            JVM heap is above 80% capacity. Risk of OutOfMemoryError.
+            Consider increasing -XX:MaxRAMPercentage or container memory limit.
+
+      - alert: JVMGCPressureHigh
+        expr: rate(jvm_gc_pause_seconds_sum{job="scoring-orchestrator"}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High GC pressure on scoring orchestrator"
+          description: >
+            GC is consuming more than 10% of CPU time.
+            This will directly increase scoring latency (stop-the-world pauses).

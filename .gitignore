@@ -1,0 +1,76 @@
+# ============================================================
+# MuleGuard.AI — .gitignore
+# ============================================================
+
+# --- CRITICAL: Never commit secrets ---
+.env
+.env.local
+.env.*.local
+
+# --- ML Data & Models (large binary files) ---
+ml/data/
+ml/models/
+ml/results/*.pkl
+*.pkl
+*.pt
+*.mar
+*.h5
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyc
+.Python
+.venv/
+venv/
+env/
+.virtualenv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# --- Java / Maven ---
+target/
+*.class
+*.jar
+*.war
+*.ear
+.mvn/
+.classpath
+.project
+.settings/
+
+# --- Node.js / Dashboard ---
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+
+# --- IDE ---
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- Docker ---
+.docker/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- Kaggle credentials (never commit) ---
+kaggle.json
+
+
+# --- Local Project / Knowledge Transfer Documents ---
+MuleGuardAI_Developer_Handoff.md
+SENTINEL_enterprise_document.md
+task.md

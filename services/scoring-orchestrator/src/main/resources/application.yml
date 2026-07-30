@@ -1,0 +1,65 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: scoring-orchestrator
+
+# MuleGuard custom properties
+muleguard:
+  service:
+    name: scoring-orchestrator
+
+  # Downstream service URLs — configurable per environment
+  services:
+    ai-engine:
+      url: ${AI_ENGINE_URL:http://localhost:8002}
+      timeout-ms: 10000
+    graph-service:
+      url: ${GRAPH_SERVICE_URL:http://localhost:8003}
+      timeout-ms: 25000
+    feature-service:
+      url: ${FEATURE_SERVICE_URL:http://localhost:8004}
+      timeout-ms: 5000
+
+  # Risk Fusion Weights — must sum to 1.0
+  weights:
+    tgn: ${WEIGHT_TGN:0.50}
+    lgbm: ${WEIGHT_LGBM:0.30}
+    autoencoder: ${WEIGHT_AUTOENCODER:0.15}
+    device: ${WEIGHT_DEVICE:0.05}
+
+  # Decision Thresholds
+  thresholds:
+    review: ${RISK_THRESHOLD_REVIEW:0.45}
+    block: ${RISK_THRESHOLD_BLOCK:0.75}
+
+# Spring Boot Actuator — expose health and Prometheus metrics
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+logging:
+  level:
+    ai.muleguard: INFO
+    org.springframework.web.reactive: WARN
+    reactor.netty: WARN
+
+---
+# Docker environment profile
+spring:
+  config:
+    activate:
+      on-profile: docker
+  application:
+    name: scoring-orchestrator

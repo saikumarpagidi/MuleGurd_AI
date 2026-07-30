@@ -1,0 +1,244 @@
+{
+  "__inputs": [],
+  "__requires": [
+    { "type": "grafana", "id": "grafana", "name": "Grafana", "version": "10.0.0" },
+    { "type": "datasource", "id": "prometheus", "name": "Prometheus", "version": "1.0.0" },
+    { "type": "panel", "id": "stat", "name": "Stat", "version": "" },
+    { "type": "panel", "id": "timeseries", "name": "Time series", "version": "" },
+    { "type": "panel", "id": "gauge", "name": "Gauge", "version": "" },
+    { "type": "panel", "id": "table", "name": "Table", "version": "" }
+  ],
+  "annotations": { "list": [] },
+  "description": "MuleGuard.AI — System overview: service health, latency, Kafka lag, database connections, memory",
+  "editable": false,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "Service Health",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" },
+      "description": "Current status of all MuleGuard microservices. Green = up, Red = down.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "0": { "color": "red", "index": 1, "text": "DOWN" }, "1": { "color": "green", "index": 0, "text": "UP" } }, "type": "value" }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "green", "value": 1 } ] },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
+      "id": 1,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "up{job=\"transaction-ingest\"}", "legendFormat": "transaction-ingest" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "up{job=\"ai-engine\"}", "legendFormat": "ai-engine" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "up{job=\"graph-service\"}", "legendFormat": "graph-service" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "up{job=\"feature-service\"}", "legendFormat": "feature-service" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "up{job=\"scoring-orchestrator\"}", "legendFormat": "scoring-orchestrator" }
+      ],
+      "title": "Microservice Status",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" },
+      "description": "Total HTTP requests per second across all services.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none", "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false },
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 10, "x": 4, "y": 1 },
+      "id": 2,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "sum(rate(http_requests_total{job=\"transaction-ingest\"}[1m])) by (job)", "legendFormat": "transaction-ingest" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "sum(rate(http_requests_total{job=\"ai-engine\"}[1m])) by (job)", "legendFormat": "ai-engine" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "sum(rate(http_requests_total{job=\"graph-service\"}[1m])) by (job)", "legendFormat": "graph-service" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "sum(rate(http_requests_total{job=\"feature-service\"}[1m])) by (job)", "legendFormat": "feature-service" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "sum(rate(http_server_requests_seconds_count{job=\"scoring-orchestrator\"}[1m])) by (job)", "legendFormat": "scoring-orchestrator" }
+      ],
+      "title": "HTTP Request Rate (req/s)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" },
+      "description": "95th percentile HTTP response latency per service. Alert fires at 200ms.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none", "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 0.15 }, { "color": "red", "value": 0.2 } ] },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 10, "x": 14, "y": 1 },
+      "id": 3,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"transaction-ingest\"}[5m])) by (le))", "legendFormat": "transaction-ingest p95" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"ai-engine\"}[5m])) by (le))", "legendFormat": "ai-engine p95" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"graph-service\"}[5m])) by (le))", "legendFormat": "graph-service p95" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"feature-service\"}[5m])) by (le))", "legendFormat": "feature-service p95" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{job=\"scoring-orchestrator\"}[5m])) by (le))", "legendFormat": "scoring-orchestrator p95" }
+      ],
+      "title": "P95 Response Latency",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
+      "id": 101,
+      "title": "Kafka & Message Bus",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" },
+      "description": "Number of messages in each Kafka topic. Rises when consumers are slower than producers.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisBorderShow": false, "drawStyle": "line", "fillOpacity": 10, "lineInterpolation": "smooth", "lineWidth": 2, "showPoints": "never", "spanNulls": false },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 10 },
+      "id": 4,
+      "options": { "legend": { "calcs": ["mean", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "kafka_topic_partitions{topic=\"muleguard.transactions\"}", "legendFormat": "transactions (partitions)" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "kafka_topic_partitions{topic=\"muleguard.alerts\"}", "legendFormat": "alerts (partitions)" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "kafka_topic_partitions{topic=\"muleguard.identity\"}", "legendFormat": "identity (partitions)" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "kafka_topic_partitions{topic=\"muleguard.model-feedback\"}", "legendFormat": "model-feedback (partitions)" }
+      ],
+      "title": "Kafka Topic Partitions",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 },
+      "id": 102,
+      "title": "Database & Cache",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" },
+      "description": "Active PostgreSQL connections. Alert at 80 connections (approaching default max_connections=100).",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 60 }, { "color": "red", "value": 80 } ] },
+          "unit": "short",
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 19 },
+      "id": 5,
+      "options": { "minVizHeight": 75, "minVizWidth": 75, "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showThresholdLabels": false, "showThresholdMarkers": true },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "pg_stat_database_numbackends{datname=\"muleguard\"}", "legendFormat": "Active connections" }
+      ],
+      "title": "PostgreSQL Active Connections",
+      "type": "gauge"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" },
+      "description": "Redis memory used vs maximum allowed. Alert at 85%.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 0.7 }, { "color": "red", "value": 0.85 } ] },
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 19 },
+      "id": 6,
+      "options": { "minVizHeight": 75, "minVizWidth": 75, "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showThresholdLabels": false, "showThresholdMarkers": true },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "redis_memory_used_bytes / redis_memory_max_bytes", "legendFormat": "Memory utilisation" }
+      ],
+      "title": "Redis Memory Utilisation",
+      "type": "gauge"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 25 },
+      "id": 103,
+      "title": "Scoring Orchestrator (JVM)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" },
+      "description": "JVM heap memory used vs committed. Alert at 80% of committed heap.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisBorderShow": false, "drawStyle": "line", "fillOpacity": 10, "lineInterpolation": "smooth", "lineWidth": 2, "showPoints": "never", "spanNulls": false },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 26 },
+      "id": 7,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "jvm_memory_used_bytes{job=\"scoring-orchestrator\",area=\"heap\"}", "legendFormat": "Heap Used" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "jvm_memory_committed_bytes{job=\"scoring-orchestrator\",area=\"heap\"}", "legendFormat": "Heap Committed" },
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "jvm_memory_max_bytes{job=\"scoring-orchestrator\",area=\"heap\"}", "legendFormat": "Heap Max" }
+      ],
+      "title": "Scoring Orchestrator — JVM Heap",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" },
+      "description": "JVM garbage collection pause time. High GC pause = high scoring latency.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisBorderShow": false, "drawStyle": "bars", "fillOpacity": 80, "lineWidth": 1, "showPoints": "never", "spanNulls": false },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 26 },
+      "id": 8,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "muleguard-prometheus" }, "expr": "rate(jvm_gc_pause_seconds_sum{job=\"scoring-orchestrator\"}[1m])", "legendFormat": "GC pause rate ({{action}})" }
+      ],
+      "title": "Scoring Orchestrator — GC Pause Rate",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["muleguard", "overview", "infrastructure"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "MuleGuard.AI — System Overview",
+  "uid": "muleguard-overview",
+  "version": 1,
+  "weekStart": ""
+}

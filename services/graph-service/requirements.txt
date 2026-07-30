@@ -1,0 +1,24 @@
+# Graph Service — Dependencies
+
+# Core API framework
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+pydantic==2.7.0
+pydantic-settings==2.2.1
+
+# HTTP client
+httpx==0.27.0
+
+# Metrics — Prometheus endpoint
+prometheus-fastapi-instrumentator==6.1.0
+
+# Neo4j driver — uncomment when graph queries are integrated
+# neo4j==5.19.0
+
+# Graph ML — uncomment when TGN inference is integrated
+# torch==2.3.0+cpu
+# torch-geometric==2.5.3
+
+# Testing
+pytest==8.2.0
+pytest-asyncio==0.23.6

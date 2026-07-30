@@ -1,0 +1,43 @@
+repos:
+  # ── Detect hardcoded secrets and credentials ──────────────
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        name: Detect hardcoded secrets
+        args:
+          - --exclude-files
+          - '\.env\.example$'
+          - --exclude-files
+          - 'package-lock\.json$'
+        exclude: |
+          (?x)^(
+            \.env\.example|
+            .*\.md|
+            .*test.*
+          )$
+
+  # ── Standard file hygiene ─────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: ["--unsafe"]
+      - id: check-json
+      - id: check-merge-conflict
+      - id: detect-private-key
+        name: Block private key commits
+      - id: check-added-large-files
+        args: ["--maxkb=5000"]
+        name: Block large files (> 5MB) — use Git LFS for ML models/datasets
+
+  # ── Python code quality ───────────────────────────────────
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.4
+    hooks:
+      - id: ruff
+        name: Ruff lint
+        args: [--fix]
+        files: ^services/.*\.py$
