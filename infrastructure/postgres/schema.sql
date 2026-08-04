@@ -13,8 +13,8 @@
 CREATE TABLE IF NOT EXISTS scoring_decisions (
     id                    BIGSERIAL PRIMARY KEY,
     transaction_id        VARCHAR(128)   NOT NULL UNIQUE,
-    source_token          CHAR(64)       NOT NULL,
-    destination_token     CHAR(64)       NOT NULL,
+    source_token          VARCHAR(255)   NOT NULL, -- Originally CHAR(64) for SHA-256
+    destination_token     VARCHAR(255)   NOT NULL, -- Originally CHAR(64) for SHA-256
     amount                NUMERIC(18,2)  NOT NULL CHECK (amount > 0),
     channel               VARCHAR(32)    NOT NULL,
     final_risk_score      NUMERIC(6,4)   NOT NULL CHECK (final_risk_score BETWEEN 0 AND 1),

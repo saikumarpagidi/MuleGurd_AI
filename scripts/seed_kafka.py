@@ -26,7 +26,8 @@ CHANNELS = ["mobile_app", "web", "atm", "upi_qr", "pos", "net_banking"]
 
 # Mule ring accounts (deterministic tokens for testing)
 RING_ACCOUNTS = [
-    hashlib.sha256(f"ring_account_{i}".encode()).hexdigest()
+    # hashlib.sha256(f"ring_account_{i}".encode()).hexdigest()
+    f"ring_account_{i}"
     for i in range(5)
 ]
 
@@ -37,7 +38,8 @@ def generate_token(seed: str) -> str:
     In production, tokenisation is performed at the bank perimeter.
     Raw account numbers never enter MuleGuard.AI.
     """
-    return hashlib.sha256(seed.encode()).hexdigest()
+    # return hashlib.sha256(seed.encode()).hexdigest()
+    return seed
 
 
 def generate_normal_transaction(index: int) -> dict:

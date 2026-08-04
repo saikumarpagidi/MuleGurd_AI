@@ -69,6 +69,49 @@ Transaction Event
 
 ---
 
+## ML Pipeline
+
+### Dataset
+
+| Property | Value |
+|----------|-------|
+| Source | IBM Anti-Money Laundering (AML) Synthetic Dataset |
+| Variant | HI-Small |
+| Transactions | 5,078,345 |
+| Date Range | 2022-09-01 → 2022-09-18 (UTC) |
+| Fraud Rate | 0.1019% (extreme class imbalance — 1 : 981 ratio) |
+| Currencies | 15 (USD, EUR, GBP, BTC, JPY, CNY, RUB, CHF, AUD, CAD, SAR, MXN, BRL, INR, ILS) |
+
+### Data Preparation Pipeline
+
+The `scripts/data_prep.py` pipeline transforms raw transaction data into a clean, model-ready Parquet file:
+
+1. **Column Standardization** — Renames raw columns (`"Account.1"`, `"From Bank"`) to `snake_case` for SQL and Python compatibility.
+2. **Timestamp Parsing** — Converts string timestamps to `datetime64[ns, UTC]` and sorts chronologically for time-series processing.
+3. **Currency Normalization** — Converts all 15 currencies to USD using September 2022 exchange rates matching the dataset timeframe.
+4. **Data Validation Gate** — Asserts zero null timestamps, zero negative amounts, valid labels (0/1), and zero unmapped currencies before persisting.
+5. **Parquet Export** — Saves to columnar format with schema preservation (67% compression vs raw CSV).
+
+```
+ml/data/raw/HI-Small_Trans.csv  →  scripts/data_prep.py  →  ml/data/processed/transactions_clean.parquet
+       (475 MB)                                                        (156 MB)
+```
+
+### Exploratory Data Analysis
+
+The `ml/notebooks/01_data_exploration.ipynb` notebook covers:
+
+- Class imbalance analysis (0.10% fraud rate — accuracy is useless; must use PR-AUC and F1-score)
+- Currency distribution across payment and receiving currencies
+- Temporal patterns — hourly, daily volume and laundering rate over time
+- Amount distribution (log-scale) by class
+- Cross-currency transaction analysis and its correlation with laundering
+- Top accounts by transaction volume (sender and receiver)
+- Payment format breakdown and fraud rate per format
+- Correlation heatmap of numeric features
+
+---
+
 ## Developer Onboarding & Installation Guide
 
 This guide covers the end-to-end setup for this  project. The architecture is heavily containerized to ensure strict environment parity and minimal local dependencies.
@@ -78,6 +121,7 @@ This guide covers the end-to-end setup for this  project. The architecture is he
 Ensure the following are installed and running on your host machine prior to initialization:
 - **Docker Desktop** (v24.x or higher) — Must be actively running.
 - **Git** — For version control operations.
+- **Python 3.11+** — For running ML scripts and data pipelines.
 
 ### Step 2: Environment Configuration
 
@@ -126,6 +170,21 @@ python scripts\seed_kafka.py --count 100
 ```
 *Validation:* Navigate to the Kafka UI at **[http://localhost:8090](http://localhost:8090)**, select **Topics** → **muleguard.transactions** → **Messages**, and verify the JSON payloads were successfully ingested into the topic.
 
+### Step 6: ML Data Pipeline Setup
+
+To prepare the transaction dataset for model training:
+
+```powershell
+# Install Python dependencies
+pip install pandas pyarrow
+
+# Place the IBM AML dataset (HI-Small_Trans.csv) in ml/data/raw/
+# Run the data preparation pipeline
+python scripts\data_prep.py
+```
+
+The pipeline will clean, normalize, and validate the data, then output to `ml/data/processed/transactions_clean.parquet`.
+
 ### Cluster Management
 
 To safely halt the environment while preserving all database volumes and cached data:
@@ -145,8 +204,8 @@ docker-compose down -v
 
 | Phase | Scope | Weeks | Status |
 |-------|-------|-------|--------|
-| **Phase 1** | Foundation — infrastructure, CI/CD, observability | 1–4 | In Progress|
-| Phase 2 | Data ingestion, feature engineering, first models | 5–10 | 🔒 Locked |
+| **Phase 1** | Foundation — infrastructure, CI/CD, observability | 1–4 | ✅ Complete |
+| **Phase 2** | Data ingestion, feature engineering, first models | 5–10 | 🔄 In Progress |
 | Phase 3 | Temporal GNN, full scoring pipeline | 11–14 | 🔒 Locked |
 | Phase 4 | Explainability, analyst dashboard | 15–21 | 🔒 Locked |
 | Phase 5 | Hardening, Kubernetes, production readiness | 22–28 | 🔒 Locked |
@@ -180,11 +239,19 @@ MuleGurd_AI/
 │   └── grafana/                 Dashboard and provisioning config
 │
 ├── scripts/
+│   ├── data_prep.py             Transaction data cleaning and normalization pipeline
 │   ├── seed_kafka.py            Synthetic event publisher
 │   └── install_hooks.ps1        Developer hook setup
 │
-├── ml/                          Model training — populated in Phase 2
-├── flink/                       Streaming jobs — populated in Phase 2
+├── ml/
+│   ├── data/                    Raw and processed datasets (gitignored)
+│   ├── notebooks/               Jupyter EDA and training notebooks
+│   ├── feature_store/           Feast configuration
+│   ├── models/                  Saved model artifacts (gitignored)
+│   ├── results/                 EDA charts and training metrics
+│   └── training/               Training scripts
+│
+├── flink/                       Streaming jobs — populated in Phase 3
 ├── k8s/                         Kubernetes manifests — populated in Phase 5
 └── .github/workflows/           CI/CD pipelines (ci.yml, build.yml)
 ```
