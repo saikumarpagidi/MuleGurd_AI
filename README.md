@@ -76,11 +76,14 @@ Transaction Event
 | Property | Value |
 |----------|-------|
 | Source | IBM Anti-Money Laundering (AML) Synthetic Dataset |
-| Variant | HI-Small |
-| Transactions | 5,078,345 |
+| Variant | **HI-Medium** |
+| Raw CSV Size | 3.03 GB |
+| Transactions | **31,898,238** |
 | Date Range | 2022-09-01 → 2022-09-18 (UTC) |
-| Fraud Rate | 0.1019% (extreme class imbalance — 1 : 981 ratio) |
+| Fraud Rate | 0.1104% (extreme class imbalance — 1 : 905 ratio) |
+| Fraud Transactions | 35,230 |
 | Currencies | 15 (USD, EUR, GBP, BTC, JPY, CNY, RUB, CHF, AUD, CAD, SAR, MXN, BRL, INR, ILS) |
+| Payment Formats | 7 (ACH, Cheque, Credit Card, Cash, Bitcoin, Wire, Reinvestment) |
 
 ### Data Preparation Pipeline
 
@@ -93,9 +96,46 @@ The `scripts/data_prep.py` pipeline transforms raw transaction data into a clean
 5. **Parquet Export** — Saves to columnar format with schema preservation (67% compression vs raw CSV).
 
 ```
-ml/data/raw/HI-Small_Trans.csv  →  scripts/data_prep.py  →  ml/data/processed/transactions_clean.parquet
-       (475 MB)                                                        (156 MB)
+ml/data/raw/HI-Medium_Trans.csv  →  scripts/data_prep.py  →  ml/data/processed/transactions_clean.parquet
+       (3.03 GB, raw)                                               (compressed Parquet)
 ```
+
+### Feature Engineering Pipeline
+
+The `scripts/feature_engineering.py` pipeline transforms `transactions_clean.parquet` into two
+model-ready feature files:
+
+| Output File | Rows | Features | Purpose |
+|-------------|------|----------|---------|
+| `features_lgbm.parquet` | 31,898,238 | **66** | LightGBM supervised training |
+| `features_autoencoder.parquet` | ~31,863,000 | **21** | Autoencoder anomaly detection (legit rows only) |
+
+**Feature Groups:**
+
+| Group | Features | Description |
+|-------|----------|-------------|
+| A — Raw Amount | 4 | Log-transformed paid/received amounts |
+| B — Amount Behavioral | 3 | Sender deviation, large-amount flag, robust Z-score |
+| C — Velocity | 8 | Rolling 1h/6h/24h counts + receiver-side counts |
+| D — Velocity Ratios | 3 | fan_out_ratio, fan_in_ratio, receiver_velocity_ratio |
+| E — Network Scores | 3 | account_degree_ratio, gather_scatter_score, entity_net_flow_ratio |
+| F — Account Profile | 8 | Lifetime aggregates: sender + receiver counts, totals, averages |
+| G — Temporal | 8 | Hour, day, dormancy gap, interval statistics |
+| H — Activity Ratios | 3 | Night/weekend ratios, daily transaction rate |
+| I — Format & Currency | 5 | Payment format encoding, ACH flag, cross-currency |
+| J — Empirical Validation | 11 | Amount ratio/diff, self-transfer, Bitcoin/Cash flags, pair counts |
+| K — Receiver-Side Velocity | 5 | Receiver rolling windows + velocity ratio |
+| L — Amount Distribution | 4 | Std dev and CV for sender and receiver amounts |
+| M — Interval Statistics | 3 | Inter-transaction timing regularity |
+
+**Execution:**
+```powershell
+# Windows: -X utf8 prevents UnicodeEncodeError from em-dash characters in logs
+python -X utf8 scripts\feature_engineering.py
+```
+
+Estimated runtime: 60–120 minutes on HI-Medium (31.9M rows). Run overnight if needed.
+
 
 ### Exploratory Data Analysis
 
@@ -178,7 +218,7 @@ To prepare the transaction dataset for model training:
 # Install Python dependencies
 pip install pandas pyarrow
 
-# Place the IBM AML dataset (HI-Small_Trans.csv) in ml/data/raw/
+# Place the IBM AML dataset (HI-Medium_Trans.csv) in ml/data/raw/
 # Run the data preparation pipeline
 python scripts\data_prep.py
 ```
@@ -240,6 +280,7 @@ MuleGurd_AI/
 │
 ├── scripts/
 │   ├── data_prep.py             Transaction data cleaning and normalization pipeline
+│   ├── feature_engineering.py   66-feature ML pipeline (LightGBM + Autoencoder)
 │   ├── seed_kafka.py            Synthetic event publisher
 │   └── install_hooks.ps1        Developer hook setup
 │
@@ -255,7 +296,6 @@ MuleGurd_AI/
 ├── k8s/                         Kubernetes manifests — populated in Phase 5
 └── .github/workflows/           CI/CD pipelines (ci.yml, build.yml)
 ```
-
 ---
 
 *MuleGuard.AI — Built for financial crime detection at scale.*

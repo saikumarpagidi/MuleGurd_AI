@@ -100,7 +100,7 @@ def clean_transactions(raw_path: str, processed_path: str):
 
 if __name__ == "__main__":
     project_root = Path(__file__).resolve().parent.parent
-    raw_file = project_root / "ml" / "data" / "raw" / "HI-Small_Trans.csv"
+    raw_file = project_root / "ml" / "data" / "raw" / "HI-Medium_Trans.csv"
     processed_file = project_root / "ml" / "data" / "processed" / "transactions_clean.parquet"
     
     if not raw_file.exists():

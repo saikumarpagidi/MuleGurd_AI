@@ -15,7 +15,7 @@ ml/results/*.pkl
 *.pt
 *.mar
 *.h5
-
+*.parquet
 # --- Python ---
 __pycache__/
 *.py[cod]
