@@ -1,0 +1,183 @@
+/* ============================================================
+   MuleGuard.AI — Animation Library
+   Premium micro-interactions & transitions
+   ============================================================ */
+
+/* ─── Fade In ─── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ─── Scale In ─── */
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes scaleInBounce {
+  0%   { opacity: 0; transform: scale(0.7); }
+  60%  { transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* ─── Slide In ─── */
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+/* ─── Pulse / Glow ─── */
+@keyframes pulseCyan {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0); }
+  50%       { box-shadow: 0 0 0 8px rgba(0, 212, 255, 0); }
+}
+
+@keyframes glowCyan {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(0, 212, 255, 0.4)); }
+  50%       { filter: drop-shadow(0 0 12px rgba(0, 212, 255, 0.8)); }
+}
+
+@keyframes glowViolet {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(124, 58, 237, 0.4)); }
+  50%       { filter: drop-shadow(0 0 12px rgba(124, 58, 237, 0.8)); }
+}
+
+@keyframes glowRed {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.4)); }
+  50%       { filter: drop-shadow(0 0 14px rgba(239, 68, 68, 0.9)); }
+}
+
+/* ─── Counter / Number ─── */
+@keyframes countUp {
+  from { transform: translateY(10px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ─── Data Flow / Scanning ─── */
+@keyframes scan {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(400%); }
+}
+
+@keyframes dataPulse {
+  0%   { opacity: 0.4; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+
+/* ─── Spinner ─── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Progress Bar ─── */
+@keyframes progressFill {
+  from { width: 0%; }
+  to   { width: var(--progress-value); }
+}
+
+/* ─── Score Reveal ─── */
+@keyframes scoreReveal {
+  0%   { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+  60%  { transform: scale(1.1) rotate(2deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* ─── Graph Node Appear ─── */
+@keyframes nodeAppear {
+  from { opacity: 0; r: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─── Bar Chart Fill ─── */
+@keyframes barFill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* ─── Gauge Arc Draw ─── */
+@keyframes arcDraw {
+  from { stroke-dashoffset: 1000; }
+  to   { stroke-dashoffset: var(--arc-offset); }
+}
+
+/* ─── Shimmer / Skeleton ─── */
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── Stagger Utility Classes ─── */
+.animate-fade-in     { animation: fadeIn     0.3s ease forwards; }
+.animate-fade-in-up  { animation: fadeInUp   0.4s ease forwards; }
+.animate-fade-in-down{ animation: fadeInDown 0.4s ease forwards; }
+.animate-scale-in    { animation: scaleIn    0.3s ease forwards; }
+
+.delay-1  { animation-delay: 50ms;  }
+.delay-2  { animation-delay: 100ms; }
+.delay-3  { animation-delay: 150ms; }
+.delay-4  { animation-delay: 200ms; }
+.delay-5  { animation-delay: 250ms; }
+.delay-6  { animation-delay: 300ms; }
+.delay-7  { animation-delay: 400ms; }
+.delay-8  { animation-delay: 500ms; }
+
+/* Scan line overlay for live data panels */
+.scan-overlay {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.scan-overlay::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 25%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 212, 255, 0.04),
+    transparent
+  );
+  animation: scan 3s ease-in-out infinite;
+}
+
+/* Live data pulsing dots */
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10B981;
+  animation: dataPulse 1.5s ease-in-out infinite;
+}

@@ -1,0 +1,340 @@
+2026-09-09 22:35:58,740 | INFO     | ========================================================================================
+2026-09-09 22:35:58,740 | INFO     | MuleGuard.AI — Phase-2 Clean Augmented LightGBM Pipeline (92 Features)
+2026-09-09 22:35:58,740 | INFO     | ========================================================================================
+2026-09-09 22:35:58,740 | INFO     | Isolation Guarantee: Artifacts will be saved to C:\Users\INP\Documents\MuleGurd_AI\ml\models\lightgbm_phase2_clean
+2026-09-09 22:35:58,740 | INFO     | Hardware Guardrail: n_jobs=4 (4 threads, CPU cool & stable)
+2026-09-09 22:35:58,740 | INFO     | ========================================================================================
+2026-09-09 22:35:58,740 | INFO     | DATA LOADING & FEATURE MERGING (66 Baseline + 26 Monotonic AE Signals = 92 Features)
+2026-09-09 22:35:58,740 | INFO     | ========================================================================================
+2026-09-09 22:35:58,741 | INFO     | [mem: startup] RAM used=32.7% (22.3GB / 68.3GB)
+2026-09-09 22:35:58,745 | INFO     | Loading 66 leak-free baseline features from: features_lgbm_v2.parquet
+2026-09-09 22:35:58,745 | INFO     | Loading 26 monotonic AE anomaly signals (latent coordinates purged) from: features_ae_signals_v3.parquet
+2026-09-09 22:35:58,745 | INFO     | Reading base timestamps for chronological sort index...
+2026-09-09 22:36:01,225 | INFO     | [mem: after sort_idx] RAM used=28.7% (19.6GB / 68.3GB)
+2026-09-09 22:36:01,225 | INFO     | Reading chronological labels and timestamps from AE signals table...
+2026-09-09 22:36:01,467 | INFO     | Combined Feature Count: 92 features (66 baseline + 26 AE signals)
+2026-09-09 22:36:01,468 | INFO     | Allocating contiguous float32 feature buffer: 31,898,238 rows x 92 cols (11.74 GB)...
+2026-09-09 22:36:01,468 | INFO     | Populating AE signals into feature matrix...
+2026-09-09 22:36:06,562 | INFO     | [mem: after AE signals populated] RAM used=55.2% (37.7GB / 68.3GB)
+2026-09-09 22:36:06,562 | INFO     | Populating base features with chronological sort alignment...
+2026-09-09 22:36:35,580 | INFO     | [mem: after base features populated (X_all ready)] RAM used=62.5% (42.7GB / 68.3GB)
+2026-09-09 22:36:35,612 | INFO     | Ground-Truth Fraud Rate: 0.1104% (35,230 fraud / 31,898,238 total)
+2026-09-09 22:36:35,613 | INFO     | ========================================================================================
+2026-09-09 22:36:35,613 | INFO     | CHRONOLOGICAL TIME-SERIES SPLIT (Leakage-Free)
+2026-09-09 22:36:35,613 | INFO     | ========================================================================================
+2026-09-09 22:36:35,621 | INFO     | Chronological split -> Fit: 22,966,731 (21,864 fraud) | Val: 2,551,859 (2,726 fraud) | OOT Test: 6,379,648 (10,640 fraud)
+2026-09-09 22:36:35,643 | INFO     | ========================================================================================
+2026-09-09 22:36:35,643 | INFO     | PHASE-2 MODEL TRAINING (92 Features, 4 Threads)
+2026-09-09 22:36:35,643 | INFO     | ========================================================================================
+2026-09-09 22:36:35,651 | INFO     | scale_pos_weight (raw ratio) = count(legit)/count(fraud) = 25,494,000/24,590 = 1036.76
+2026-09-09 22:36:35,651 | INFO     | Starting LightGBM: ceiling=6000 rounds | early_stopping=150 | threads=4 | scale_pos_weight=70.69 (1036.76 raw x 0.0682 tuned)
+2026-09-09 22:36:35,651 | INFO     | [mem: before fit dataset build] RAM used=62.5% (42.7GB / 68.3GB)
+2026-09-09 22:36:35,651 | INFO     | Constructing fit dataset in memory...
+2026-09-09 22:36:44,889 | INFO     | Constructing validation dataset in memory...
+2026-09-09 22:36:45,892 | INFO     | [mem: after datasets constructed] RAM used=66.0% (45.1GB / 68.3GB)
+2026-09-09 22:37:41,735 | INFO     | [Round   50] val average_precision: 0.45526 | val auc: 0.98371
+2026-09-09 22:38:38,893 | INFO     | [Round  100] val average_precision: 0.50267 | val auc: 0.98398
+2026-09-09 22:39:35,220 | INFO     | [Round  150] val average_precision: 0.51805 | val auc: 0.98446
+2026-09-09 22:40:32,751 | INFO     | [Round  200] val average_precision: 0.53026 | val auc: 0.98477
+2026-09-09 22:40:32,766 | INFO     | [Checkpoint] Saved Booster at round  200 -> checkpoint_round_0200.txt
+2026-09-09 22:41:28,346 | INFO     | [Round  250] val average_precision: 0.53413 | val auc: 0.98484
+2026-09-09 22:42:25,089 | INFO     | [Round  300] val average_precision: 0.53722 | val auc: 0.98494
+2026-09-09 22:43:20,457 | INFO     | [Round  350] val average_precision: 0.53851 | val auc: 0.98498
+2026-09-09 22:44:16,385 | INFO     | [Round  400] val average_precision: 0.54075 | val auc: 0.98500
+2026-09-09 22:44:16,412 | INFO     | [Checkpoint] Saved Booster at round  400 -> checkpoint_round_0400.txt
+2026-09-09 22:45:11,875 | INFO     | [Round  450] val average_precision: 0.54245 | val auc: 0.98511
+2026-09-09 22:46:07,242 | INFO     | [Round  500] val average_precision: 0.54383 | val auc: 0.98518
+2026-09-09 22:47:02,893 | INFO     | [Round  550] val average_precision: 0.54592 | val auc: 0.98525
+2026-09-09 22:47:57,646 | INFO     | [Round  600] val average_precision: 0.54712 | val auc: 0.98534
+2026-09-09 22:47:57,683 | INFO     | [Checkpoint] Saved Booster at round  600 -> checkpoint_round_0600.txt
+2026-09-09 22:48:52,400 | INFO     | [Round  650] val average_precision: 0.54828 | val auc: 0.98536
+2026-09-09 22:49:48,217 | INFO     | [Round  700] val average_precision: 0.54955 | val auc: 0.98537
+2026-09-09 22:50:43,507 | INFO     | [Round  750] val average_precision: 0.55065 | val auc: 0.98541
+2026-09-09 22:51:39,905 | INFO     | [Round  800] val average_precision: 0.55265 | val auc: 0.98545
+2026-09-09 22:51:39,954 | INFO     | [Checkpoint] Saved Booster at round  800 -> checkpoint_round_0800.txt
+2026-09-09 22:52:35,119 | INFO     | [Round  850] val average_precision: 0.55325 | val auc: 0.98549
+2026-09-09 22:53:31,145 | INFO     | [Round  900] val average_precision: 0.55412 | val auc: 0.98550
+2026-09-09 22:54:26,220 | INFO     | [Round  950] val average_precision: 0.55455 | val auc: 0.98555
+2026-09-09 22:55:23,532 | INFO     | [Round 1000] val average_precision: 0.55560 | val auc: 0.98561
+2026-09-09 22:55:23,588 | INFO     | [Checkpoint] Saved Booster at round 1000 -> checkpoint_round_1000.txt
+2026-09-09 22:56:18,898 | INFO     | [Round 1050] val average_precision: 0.55649 | val auc: 0.98568
+2026-09-09 22:57:15,415 | INFO     | [Round 1100] val average_precision: 0.55759 | val auc: 0.98569
+2026-09-09 22:58:11,671 | INFO     | [Round 1150] val average_precision: 0.55826 | val auc: 0.98573
+2026-09-09 22:59:08,842 | INFO     | [Round 1200] val average_precision: 0.55914 | val auc: 0.98573
+2026-09-09 22:59:08,909 | INFO     | [Checkpoint] Saved Booster at round 1200 -> checkpoint_round_1200.txt
+2026-09-09 23:00:05,559 | INFO     | [Round 1250] val average_precision: 0.55980 | val auc: 0.98578
+2026-09-09 23:01:02,218 | INFO     | [Round 1300] val average_precision: 0.56076 | val auc: 0.98581
+2026-09-09 23:01:58,780 | INFO     | [Round 1350] val average_precision: 0.56159 | val auc: 0.98588
+2026-09-09 23:02:57,036 | INFO     | [Round 1400] val average_precision: 0.56262 | val auc: 0.98588
+2026-09-09 23:02:57,132 | INFO     | [Checkpoint] Saved Booster at round 1400 -> checkpoint_round_1400.txt
+2026-09-09 23:03:54,488 | INFO     | [Round 1450] val average_precision: 0.56386 | val auc: 0.98591
+2026-09-09 23:04:50,171 | INFO     | [Round 1500] val average_precision: 0.56464 | val auc: 0.98591
+2026-09-09 23:05:46,940 | INFO     | [Round 1550] val average_precision: 0.56528 | val auc: 0.98588
+2026-09-09 23:06:43,907 | INFO     | [Round 1600] val average_precision: 0.56631 | val auc: 0.98591
+2026-09-09 23:06:44,005 | INFO     | [Checkpoint] Saved Booster at round 1600 -> checkpoint_round_1600.txt
+2026-09-09 23:07:39,456 | INFO     | [Round 1650] val average_precision: 0.56706 | val auc: 0.98593
+2026-09-09 23:08:37,397 | INFO     | [Round 1700] val average_precision: 0.56789 | val auc: 0.98596
+2026-09-09 23:09:33,110 | INFO     | [Round 1750] val average_precision: 0.56862 | val auc: 0.98599
+2026-09-09 23:10:30,552 | INFO     | [Round 1800] val average_precision: 0.56905 | val auc: 0.98598
+2026-09-09 23:10:30,661 | INFO     | [Checkpoint] Saved Booster at round 1800 -> checkpoint_round_1800.txt
+2026-09-09 23:11:26,619 | INFO     | [Round 1850] val average_precision: 0.56939 | val auc: 0.98602
+2026-09-09 23:12:23,297 | INFO     | [Round 1900] val average_precision: 0.57013 | val auc: 0.98602
+2026-09-09 23:13:20,406 | INFO     | [Round 1950] val average_precision: 0.57082 | val auc: 0.98604
+2026-09-09 23:14:16,840 | INFO     | [Round 2000] val average_precision: 0.57151 | val auc: 0.98603
+2026-09-09 23:14:16,958 | INFO     | [Checkpoint] Saved Booster at round 2000 -> checkpoint_round_2000.txt
+2026-09-09 23:15:12,520 | INFO     | [Round 2050] val average_precision: 0.57198 | val auc: 0.98602
+2026-09-09 23:16:09,357 | INFO     | [Round 2100] val average_precision: 0.57257 | val auc: 0.98606
+2026-09-09 23:17:05,519 | INFO     | [Round 2150] val average_precision: 0.57296 | val auc: 0.98607
+2026-09-09 23:18:02,841 | INFO     | [Round 2200] val average_precision: 0.57327 | val auc: 0.98606
+2026-09-09 23:18:02,972 | INFO     | [Checkpoint] Saved Booster at round 2200 -> checkpoint_round_2200.txt
+2026-09-09 23:18:59,115 | INFO     | [Round 2250] val average_precision: 0.57341 | val auc: 0.98606
+2026-09-09 23:19:56,883 | INFO     | [Round 2300] val average_precision: 0.57374 | val auc: 0.98610
+2026-09-09 23:20:54,190 | INFO     | [Round 2350] val average_precision: 0.57446 | val auc: 0.98610
+2026-09-09 23:21:51,154 | INFO     | [Round 2400] val average_precision: 0.57458 | val auc: 0.98612
+2026-09-09 23:21:51,296 | INFO     | [Checkpoint] Saved Booster at round 2400 -> checkpoint_round_2400.txt
+2026-09-09 23:22:48,429 | INFO     | [Round 2450] val average_precision: 0.57511 | val auc: 0.98614
+2026-09-09 23:23:45,265 | INFO     | [Round 2500] val average_precision: 0.57497 | val auc: 0.98611
+2026-09-09 23:24:42,776 | INFO     | [Round 2550] val average_precision: 0.57532 | val auc: 0.98611
+2026-09-09 23:25:38,769 | INFO     | [Round 2600] val average_precision: 0.57596 | val auc: 0.98610
+2026-09-09 23:25:38,928 | INFO     | [Checkpoint] Saved Booster at round 2600 -> checkpoint_round_2600.txt
+2026-09-09 23:26:35,605 | INFO     | [Round 2650] val average_precision: 0.57651 | val auc: 0.98609
+2026-09-09 23:27:32,090 | INFO     | [Round 2700] val average_precision: 0.57672 | val auc: 0.98608
+2026-09-09 23:28:29,864 | INFO     | [Round 2750] val average_precision: 0.57729 | val auc: 0.98610
+2026-09-09 23:29:26,860 | INFO     | [Round 2800] val average_precision: 0.57753 | val auc: 0.98609
+2026-09-09 23:29:27,031 | INFO     | [Checkpoint] Saved Booster at round 2800 -> checkpoint_round_2800.txt
+2026-09-09 23:30:24,552 | INFO     | [Round 2850] val average_precision: 0.57793 | val auc: 0.98608
+2026-09-09 23:31:21,712 | INFO     | [Round 2900] val average_precision: 0.57804 | val auc: 0.98608
+2026-09-09 23:32:18,669 | INFO     | [Round 2950] val average_precision: 0.57831 | val auc: 0.98607
+2026-09-10 06:07:36,916 | INFO     | ========================================================================================
+2026-09-10 06:07:36,917 | INFO     | MuleGuard.AI — Phase-2 Clean Augmented LightGBM Pipeline (92 Features)
+2026-09-10 06:07:36,917 | INFO     | ========================================================================================
+2026-09-10 06:07:36,917 | INFO     | Isolation Guarantee: Artifacts will be saved to C:\Users\INP\Documents\MuleGurd_AI\ml\models\lightgbm_phase2_clean
+2026-09-10 06:07:36,917 | INFO     | Hardware Guardrail: n_jobs=4 (4 threads, CPU cool & stable)
+2026-09-10 06:07:36,917 | INFO     | ========================================================================================
+2026-09-10 06:07:36,917 | INFO     | DATA LOADING & FEATURE MERGING (66 Baseline + 26 Monotonic AE Signals = 92 Features)
+2026-09-10 06:07:36,917 | INFO     | ========================================================================================
+2026-09-10 06:07:36,917 | INFO     | [mem: startup] RAM used=12.2% (8.3GB / 68.3GB)
+2026-09-10 06:07:36,947 | INFO     | Loading 66 leak-free baseline features from: features_lgbm_v2.parquet
+2026-09-10 06:07:36,947 | INFO     | Loading 26 monotonic AE anomaly signals (latent coordinates purged) from: features_ae_signals_v3.parquet
+2026-09-10 06:07:36,947 | INFO     | Reading base timestamps for chronological sort index...
+2026-09-10 06:07:39,748 | INFO     | [mem: after sort_idx] RAM used=13.5% (9.2GB / 68.3GB)
+2026-09-10 06:07:39,749 | INFO     | Reading chronological labels and timestamps from AE signals table...
+2026-09-10 06:07:40,005 | INFO     | Combined Feature Count: 92 features (66 baseline + 26 AE signals)
+2026-09-10 06:07:40,005 | INFO     | Allocating contiguous float32 feature buffer: 31,898,238 rows x 92 cols (11.74 GB)...
+2026-09-10 06:07:40,005 | INFO     | Populating AE signals into feature matrix...
+2026-09-10 06:07:45,302 | INFO     | [mem: after AE signals populated] RAM used=40.4% (27.6GB / 68.3GB)
+2026-09-10 06:07:45,302 | INFO     | Populating base features with chronological sort alignment...
+2026-09-10 06:08:17,331 | INFO     | [mem: after base features populated (X_all ready)] RAM used=52.0% (35.5GB / 68.3GB)
+2026-09-10 06:08:17,361 | INFO     | Ground-Truth Fraud Rate: 0.1104% (35,230 fraud / 31,898,238 total)
+2026-09-10 06:08:17,361 | INFO     | ========================================================================================
+2026-09-10 06:08:17,361 | INFO     | CHRONOLOGICAL TIME-SERIES SPLIT (Leakage-Free)
+2026-09-10 06:08:17,361 | INFO     | ========================================================================================
+2026-09-10 06:08:17,372 | INFO     | Chronological split -> Fit: 22,966,731 (21,864 fraud) | Val: 2,551,859 (2,726 fraud) | OOT Test: 6,379,648 (10,640 fraud)
+2026-09-10 06:08:17,398 | INFO     | ========================================================================================
+2026-09-10 06:08:17,398 | INFO     | PHASE-2 MODEL TRAINING (92 Features, 4 Threads)
+2026-09-10 06:08:17,398 | INFO     | ========================================================================================
+2026-09-10 06:08:17,408 | INFO     | scale_pos_weight (raw ratio) = count(legit)/count(fraud) = 25,494,000/24,590 = 1036.76
+2026-09-10 06:08:17,545 | INFO     | [Auto-Resume] Found existing clean checkpoint: checkpoint_round_2800.txt (2800 trees). Resuming training for up to 3200 additional rounds (ceiling=6000).
+2026-09-10 06:08:17,545 | INFO     | Starting LightGBM: ceiling=6000 rounds | early_stopping=150 | threads=4 | scale_pos_weight=70.69 (1036.76 raw x 0.0682 tuned)
+2026-09-10 06:08:17,545 | INFO     | [mem: before fit dataset build] RAM used=52.0% (35.5GB / 68.3GB)
+2026-09-10 06:08:17,545 | INFO     | Constructing fit dataset in memory...
+2026-09-10 06:08:27,146 | INFO     | Constructing validation dataset in memory...
+2026-09-10 06:08:28,185 | INFO     | [mem: after datasets constructed] RAM used=55.6% (38.0GB / 68.3GB)
+2026-09-10 06:40:40,179 | INFO     | [Round 2850] val average_precision: 0.57785 | val auc: 0.98607
+2026-09-10 06:41:36,509 | INFO     | [Round 2900] val average_precision: 0.57825 | val auc: 0.98605
+2026-09-10 06:42:33,242 | INFO     | [Round 2950] val average_precision: 0.57861 | val auc: 0.98607
+2026-09-10 06:43:29,026 | INFO     | [Round 3000] val average_precision: 0.57863 | val auc: 0.98607
+2026-09-10 06:43:29,215 | INFO     | [Checkpoint] Saved Booster at round 3000 -> checkpoint_round_3000.txt
+2026-09-10 06:44:26,327 | INFO     | [Round 3050] val average_precision: 0.57891 | val auc: 0.98606
+2026-09-10 06:45:24,154 | INFO     | [Round 3100] val average_precision: 0.57927 | val auc: 0.98603
+2026-09-10 06:46:19,525 | INFO     | [Round 3150] val average_precision: 0.57918 | val auc: 0.98603
+2026-09-10 06:47:16,985 | INFO     | [Round 3200] val average_precision: 0.57936 | val auc: 0.98602
+2026-09-10 06:47:17,185 | INFO     | [Checkpoint] Saved Booster at round 3200 -> checkpoint_round_3200.txt
+2026-09-10 06:48:13,203 | INFO     | [Round 3250] val average_precision: 0.57972 | val auc: 0.98601
+2026-09-10 06:49:09,093 | INFO     | [Round 3300] val average_precision: 0.57991 | val auc: 0.98602
+2026-09-10 06:50:05,364 | INFO     | [Round 3350] val average_precision: 0.58031 | val auc: 0.98604
+2026-09-10 06:51:02,250 | INFO     | [Round 3400] val average_precision: 0.58046 | val auc: 0.98602
+2026-09-10 06:51:02,466 | INFO     | [Checkpoint] Saved Booster at round 3400 -> checkpoint_round_3400.txt
+2026-09-10 06:51:58,280 | INFO     | [Round 3450] val average_precision: 0.58063 | val auc: 0.98600
+2026-09-10 06:52:54,920 | INFO     | [Round 3500] val average_precision: 0.58103 | val auc: 0.98600
+2026-09-10 06:53:50,971 | INFO     | [Round 3550] val average_precision: 0.58107 | val auc: 0.98600
+2026-09-10 06:54:47,336 | INFO     | [Round 3600] val average_precision: 0.58140 | val auc: 0.98600
+2026-09-10 06:54:47,557 | INFO     | [Checkpoint] Saved Booster at round 3600 -> checkpoint_round_3600.txt
+2026-09-10 06:55:44,147 | INFO     | [Round 3650] val average_precision: 0.58159 | val auc: 0.98601
+2026-09-10 06:56:40,477 | INFO     | [Round 3700] val average_precision: 0.58186 | val auc: 0.98603
+2026-09-10 06:57:36,484 | INFO     | [Round 3750] val average_precision: 0.58236 | val auc: 0.98603
+2026-09-10 06:58:33,211 | INFO     | [Round 3800] val average_precision: 0.58267 | val auc: 0.98602
+2026-09-10 06:58:33,444 | INFO     | [Checkpoint] Saved Booster at round 3800 -> checkpoint_round_3800.txt
+2026-09-10 06:59:30,873 | INFO     | [Round 3850] val average_precision: 0.58277 | val auc: 0.98602
+2026-09-10 07:00:27,154 | INFO     | [Round 3900] val average_precision: 0.58286 | val auc: 0.98599
+2026-09-10 07:01:23,698 | INFO     | [Round 3950] val average_precision: 0.58317 | val auc: 0.98599
+2026-09-10 07:02:19,421 | INFO     | [Round 4000] val average_precision: 0.58337 | val auc: 0.98598
+2026-09-10 07:02:19,667 | INFO     | [Checkpoint] Saved Booster at round 4000 -> checkpoint_round_4000.txt
+2026-09-10 10:12:07,674 | INFO     | ========================================================================================
+2026-09-10 10:12:07,675 | INFO     | MuleGuard.AI — Phase-2 Clean Augmented LightGBM Pipeline (92 Features)
+2026-09-10 10:12:07,675 | INFO     | ========================================================================================
+2026-09-10 10:12:07,675 | INFO     | Isolation Guarantee: Artifacts will be saved to C:\Users\INP\Documents\MuleGurd_AI\ml\models\lightgbm_phase2_clean
+2026-09-10 10:12:07,675 | INFO     | Hardware Guardrail: n_jobs=4 (4 threads, CPU cool & stable)
+2026-09-10 10:12:07,675 | INFO     | ========================================================================================
+2026-09-10 10:12:07,675 | INFO     | DATA LOADING & FEATURE MERGING (66 Baseline + 26 Monotonic AE Signals = 92 Features)
+2026-09-10 10:12:07,675 | INFO     | ========================================================================================
+2026-09-10 10:12:07,676 | INFO     | [mem: startup] RAM used=13.9% (9.5GB / 68.3GB)
+2026-09-10 10:12:07,711 | INFO     | Loading 66 leak-free baseline features from: features_lgbm_v2.parquet
+2026-09-10 10:12:07,712 | INFO     | Loading 26 monotonic AE anomaly signals (latent coordinates purged) from: features_ae_signals_v3.parquet
+2026-09-10 10:12:07,712 | INFO     | Reading base timestamps for chronological sort index...
+2026-09-10 10:12:10,919 | INFO     | [mem: after sort_idx] RAM used=15.5% (10.6GB / 68.3GB)
+2026-09-10 10:12:10,920 | INFO     | Reading chronological labels and timestamps from AE signals table...
+2026-09-10 10:12:11,219 | INFO     | Combined Feature Count: 92 features (66 baseline + 26 AE signals)
+2026-09-10 10:12:11,219 | INFO     | Allocating contiguous float32 feature buffer: 31,898,238 rows x 92 cols (11.74 GB)...
+2026-09-10 10:12:11,219 | INFO     | Populating AE signals into feature matrix...
+2026-09-10 10:12:17,201 | INFO     | [mem: after AE signals populated] RAM used=42.5% (29.0GB / 68.3GB)
+2026-09-10 10:12:17,201 | INFO     | Populating base features with chronological sort alignment...
+2026-09-10 10:12:52,558 | INFO     | [mem: after base features populated (X_all ready)] RAM used=54.6% (37.3GB / 68.3GB)
+2026-09-10 10:12:52,585 | INFO     | Ground-Truth Fraud Rate: 0.1104% (35,230 fraud / 31,898,238 total)
+2026-09-10 10:12:52,585 | INFO     | ========================================================================================
+2026-09-10 10:12:52,585 | INFO     | CHRONOLOGICAL TIME-SERIES SPLIT (Leakage-Free)
+2026-09-10 10:12:52,585 | INFO     | ========================================================================================
+2026-09-10 10:12:52,594 | INFO     | Chronological split -> Fit: 22,966,731 (21,864 fraud) | Val: 2,551,859 (2,726 fraud) | OOT Test: 6,379,648 (10,640 fraud)
+2026-09-10 10:12:52,615 | INFO     | ========================================================================================
+2026-09-10 10:12:52,615 | INFO     | PHASE-2 MODEL TRAINING (92 Features, 4 Threads)
+2026-09-10 10:12:52,615 | INFO     | ========================================================================================
+2026-09-10 10:12:52,621 | INFO     | scale_pos_weight (raw ratio) = count(legit)/count(fraud) = 25,494,000/24,590 = 1036.76
+2026-09-10 10:12:52,816 | INFO     | [Auto-Resume] Found existing clean checkpoint: checkpoint_round_4000.txt (4000 trees). Resuming training for up to 2000 additional rounds (ceiling=6000).
+2026-09-10 10:12:52,816 | INFO     | Starting LightGBM: ceiling=6000 rounds | early_stopping=150 | threads=4 | scale_pos_weight=70.69 (1036.76 raw x 0.0682 tuned)
+2026-09-10 10:12:52,816 | INFO     | [mem: before fit dataset build] RAM used=54.7% (37.4GB / 68.3GB)
+2026-09-10 10:12:52,817 | INFO     | Constructing fit dataset in memory...
+2026-09-10 10:13:03,936 | INFO     | Constructing validation dataset in memory...
+2026-09-10 10:13:05,189 | INFO     | [mem: after datasets constructed] RAM used=57.8% (39.5GB / 68.3GB)
+2026-09-10 11:22:46,463 | INFO     | [Round 4050] val average_precision: 0.58352 | val auc: 0.98598
+2026-09-10 11:24:13,206 | INFO     | [Round 4100] val average_precision: 0.58386 | val auc: 0.98600
+2026-09-10 11:25:38,106 | INFO     | [Round 4150] val average_precision: 0.58398 | val auc: 0.98601
+2026-09-10 11:26:59,110 | INFO     | [Round 4200] val average_precision: 0.58398 | val auc: 0.98599
+2026-09-10 11:26:59,518 | INFO     | [Checkpoint] Saved Booster at round 4200 -> checkpoint_round_4200.txt
+2026-09-10 11:28:21,547 | INFO     | [Round 4250] val average_precision: 0.58400 | val auc: 0.98598
+2026-09-10 11:29:42,521 | INFO     | [Round 4300] val average_precision: 0.58417 | val auc: 0.98598
+2026-09-10 11:31:00,778 | INFO     | [Round 4350] val average_precision: 0.58427 | val auc: 0.98598
+2026-09-10 11:32:22,635 | INFO     | [Round 4400] val average_precision: 0.58425 | val auc: 0.98597
+2026-09-10 11:32:23,039 | INFO     | [Checkpoint] Saved Booster at round 4400 -> checkpoint_round_4400.txt
+2026-09-10 11:33:44,272 | INFO     | [Round 4450] val average_precision: 0.58459 | val auc: 0.98599
+2026-09-10 11:35:02,055 | INFO     | [Round 4500] val average_precision: 0.58484 | val auc: 0.98600
+2026-09-10 11:36:21,250 | INFO     | [Round 4550] val average_precision: 0.58493 | val auc: 0.98601
+2026-09-10 11:37:40,880 | INFO     | [Round 4600] val average_precision: 0.58509 | val auc: 0.98600
+2026-09-10 11:37:41,357 | INFO     | [Checkpoint] Saved Booster at round 4600 -> checkpoint_round_4600.txt
+2026-09-10 11:39:04,462 | INFO     | [Round 4650] val average_precision: 0.58529 | val auc: 0.98600
+2026-09-10 11:40:23,584 | INFO     | [Round 4700] val average_precision: 0.58552 | val auc: 0.98603
+2026-09-10 11:41:36,011 | INFO     | [Round 4750] val average_precision: 0.58545 | val auc: 0.98603
+2026-09-10 11:42:57,896 | INFO     | [Round 4800] val average_precision: 0.58572 | val auc: 0.98600
+2026-09-10 11:42:58,570 | INFO     | [Checkpoint] Saved Booster at round 4800 -> checkpoint_round_4800.txt
+2026-09-10 11:44:40,277 | INFO     | [Round 4850] val average_precision: 0.58602 | val auc: 0.98600
+2026-09-10 12:10:55,569 | INFO     | ========================================================================================
+2026-09-10 12:10:55,569 | INFO     | MuleGuard.AI — Phase-2 Clean Augmented LightGBM Pipeline (92 Features)
+2026-09-10 12:10:55,569 | INFO     | ========================================================================================
+2026-09-10 12:10:55,569 | INFO     | Isolation Guarantee: Artifacts will be saved to C:\Users\INP\Documents\MuleGurd_AI\ml\models\lightgbm_phase2_clean
+2026-09-10 12:10:55,569 | INFO     | Hardware Guardrail: n_jobs=4 (4 threads, CPU cool & stable)
+2026-09-10 12:10:55,569 | INFO     | ========================================================================================
+2026-09-10 12:10:55,569 | INFO     | DATA LOADING & FEATURE MERGING (66 Baseline + 26 Monotonic AE Signals = 92 Features)
+2026-09-10 12:10:55,569 | INFO     | ========================================================================================
+2026-09-10 12:10:55,569 | INFO     | [mem: startup] RAM used=17.6% (12.0GB / 68.3GB)
+2026-09-10 12:10:55,573 | INFO     | Loading 66 leak-free baseline features from: features_lgbm_v2.parquet
+2026-09-10 12:10:55,574 | INFO     | Loading 26 monotonic AE anomaly signals (latent coordinates purged) from: features_ae_signals_v3.parquet
+2026-09-10 12:10:55,574 | INFO     | Reading base timestamps for chronological sort index...
+2026-09-10 12:10:58,372 | INFO     | [mem: after sort_idx] RAM used=18.8% (12.8GB / 68.3GB)
+2026-09-10 12:10:58,373 | INFO     | Reading chronological labels and timestamps from AE signals table...
+2026-09-10 12:10:58,718 | INFO     | Combined Feature Count: 92 features (66 baseline + 26 AE signals)
+2026-09-10 12:10:58,719 | INFO     | Allocating contiguous float32 feature buffer: 31,898,238 rows x 92 cols (11.74 GB)...
+2026-09-10 12:10:58,719 | INFO     | Populating AE signals into feature matrix...
+2026-09-10 12:11:03,093 | INFO     | [mem: after AE signals populated] RAM used=46.0% (31.4GB / 68.3GB)
+2026-09-10 12:11:03,094 | INFO     | Populating base features with chronological sort alignment...
+2026-09-10 12:12:05,339 | INFO     | [mem: after base features populated (X_all ready)] RAM used=58.2% (39.8GB / 68.3GB)
+2026-09-10 12:12:05,401 | INFO     | Ground-Truth Fraud Rate: 0.1104% (35,230 fraud / 31,898,238 total)
+2026-09-10 12:12:05,402 | INFO     | ========================================================================================
+2026-09-10 12:12:05,402 | INFO     | CHRONOLOGICAL TIME-SERIES SPLIT (Leakage-Free)
+2026-09-10 12:12:05,402 | INFO     | ========================================================================================
+2026-09-10 12:12:05,427 | INFO     | Chronological split -> Fit: 22,966,731 (21,864 fraud) | Val: 2,551,859 (2,726 fraud) | OOT Test: 6,379,648 (10,640 fraud)
+2026-09-10 12:12:05,461 | INFO     | ========================================================================================
+2026-09-10 12:12:05,461 | INFO     | PHASE-2 MODEL TRAINING (92 Features, 4 Threads)
+2026-09-10 12:12:05,462 | INFO     | ========================================================================================
+2026-09-10 12:12:05,481 | INFO     | scale_pos_weight (raw ratio) = count(legit)/count(fraud) = 25,494,000/24,590 = 1036.76
+2026-09-10 12:12:05,705 | INFO     | [Auto-Resume] Found existing clean checkpoint: checkpoint_round_4800.txt (4800 trees). Resuming training for up to 1200 additional rounds (ceiling=6000).
+2026-09-10 12:12:05,705 | INFO     | Starting LightGBM: ceiling=6000 rounds | early_stopping=150 | threads=4 | scale_pos_weight=70.69 (1036.76 raw x 0.0682 tuned)
+2026-09-10 12:12:05,706 | INFO     | [mem: before fit dataset build] RAM used=58.2% (39.8GB / 68.3GB)
+2026-09-10 12:12:05,706 | INFO     | Constructing fit dataset in memory...
+2026-09-10 12:12:32,005 | INFO     | Constructing validation dataset in memory...
+2026-09-10 12:12:34,936 | INFO     | [mem: after datasets constructed] RAM used=61.0% (41.7GB / 68.3GB)
+2026-09-10 13:34:09,403 | INFO     | [Round 4850] val average_precision: 0.58586 | val auc: 0.98600
+2026-09-10 13:35:26,557 | INFO     | [Round 4900] val average_precision: 0.58600 | val auc: 0.98599
+2026-09-10 13:36:43,927 | INFO     | [Round 4950] val average_precision: 0.58615 | val auc: 0.98599
+2026-09-10 13:38:01,445 | INFO     | [Round 5000] val average_precision: 0.58621 | val auc: 0.98598
+2026-09-10 13:38:01,857 | INFO     | [Checkpoint] Saved Booster at round 5000 -> checkpoint_round_5000.txt
+2026-09-10 13:39:19,929 | INFO     | [Round 5050] val average_precision: 0.58644 | val auc: 0.98596
+2026-09-10 13:40:38,162 | INFO     | [Round 5100] val average_precision: 0.58630 | val auc: 0.98594
+2026-09-10 13:41:55,949 | INFO     | [Round 5150] val average_precision: 0.58636 | val auc: 0.98593
+2026-09-10 13:43:14,038 | INFO     | [Round 5200] val average_precision: 0.58640 | val auc: 0.98593
+2026-09-10 13:43:14,471 | INFO     | [Checkpoint] Saved Booster at round 5200 -> checkpoint_round_5200.txt
+2026-09-10 13:44:31,170 | INFO     | [Round 5250] val average_precision: 0.58659 | val auc: 0.98594
+2026-09-10 13:45:48,225 | INFO     | [Round 5300] val average_precision: 0.58680 | val auc: 0.98593
+2026-09-10 13:47:05,005 | INFO     | [Round 5350] val average_precision: 0.58688 | val auc: 0.98592
+2026-09-10 13:48:22,960 | INFO     | [Round 5400] val average_precision: 0.58672 | val auc: 0.98590
+2026-09-10 13:48:23,406 | INFO     | [Checkpoint] Saved Booster at round 5400 -> checkpoint_round_5400.txt
+2026-09-10 13:49:39,807 | INFO     | [Round 5450] val average_precision: 0.58657 | val auc: 0.98590
+2026-09-10 13:50:05,301 | INFO     | Training completed in 97.5 mins. Best iteration: 5316
+2026-09-10 13:50:05,408 | INFO     | ========================================================================================
+2026-09-10 13:50:05,408 | INFO     | OUT-OF-TIME TEST EVALUATION (Untouched 6.38M Rows)
+2026-09-10 13:50:05,408 | INFO     | ========================================================================================
+2026-09-10 14:13:27,007 | INFO     | Scored 6,379,648 test rows in 1401.6s
+2026-09-10 14:13:31,140 | INFO     | OOT ROC-AUC: 0.9906
+2026-09-10 14:13:31,141 | INFO     | OOT PR-AUC : 0.6803
+2026-09-10 14:13:47,969 | INFO     | Confusion Matrix @0.5 threshold (reference only):
+[[6352174   16834]
+ [   2608    8032]]
+2026-09-10 14:13:57,315 | INFO     | 
+              precision    recall  f1-score   support
+
+         0.0     0.9996    0.9974    0.9985   6369008
+         1.0     0.3230    0.7549    0.4524     10640
+
+    accuracy                         0.9970   6379648
+   macro avg     0.6613    0.8761    0.7255   6379648
+weighted avg     0.9985    0.9970    0.9976   6379648
+
+2026-09-10 14:13:57,373 | INFO     | [Top  0.1% Alert Budget] Flagged=6,380 | Caught=5,534 | Recall=52.01% | Precision=86.74% | Lift=520.1x
+2026-09-10 14:13:57,429 | INFO     | [Top  0.5% Alert Budget] Flagged=31,899 | Caught=8,354 | Recall=78.52% | Precision=26.19% | Lift=157.0x
+2026-09-10 14:13:57,480 | INFO     | [Top  1.0% Alert Budget] Flagged=63,797 | Caught=9,123 | Recall=85.74% | Precision=14.30% | Lift=85.7x
+2026-09-10 14:13:57,536 | INFO     | [Top  5.0% Alert Budget] Flagged=318,983 | Caught=9,811 | Recall=92.21% | Precision=3.08% | Lift=18.4x
+2026-09-10 14:13:59,235 | INFO     | Recall >= 80% MANDATE MET at score threshold=0.0000 (Recall=100.0000%, Precision=0.1668%)
+2026-09-10 14:14:00,257 | INFO     | Saved PR curve plot -> pr_curve.png
+2026-09-10 14:14:00,267 | INFO     | ========================================================================================
+2026-09-10 14:14:00,267 | INFO     | SHAP EXPLAINABILITY REPORT (92 Features)
+2026-09-10 14:14:00,268 | INFO     | ========================================================================================
+2026-09-10 14:21:26,899 | INFO     | Saved SHAP importance ranking (92 features) -> shap_feature_importance_full.csv
+2026-09-10 14:21:27,861 | INFO     | Saved FULL feature-importance bar plot (92 features) -> shap_summary_bar_full.png
+2026-09-10 14:21:38,889 | INFO     | Saved SHAP beeswarm plot -> shap_summary_dot.png
+2026-09-10 14:21:38,889 | INFO     | 
+Top 15 Most Important Features in Phase-2 Model:
+2026-09-10 14:21:38,912 | INFO     |     1. [Tabular]   sender_receiver_pair_txn_count         (SHAP=1.4787)
+2026-09-10 14:21:38,913 | INFO     |     2. [Tabular]   is_ach_payment                         (SHAP=0.3837)
+2026-09-10 14:21:38,913 | INFO     |     3. [Tabular]   payment_format_encoded                 (SHAP=0.3782)
+2026-09-10 14:21:38,913 | INFO     |     4. [Tabular]   days_since_own_last_activity           (SHAP=0.3755)
+2026-09-10 14:21:38,914 | INFO     |     5. [Tabular]   days_since_account_first_txn           (SHAP=0.3718)
+2026-09-10 14:21:38,914 | INFO     |     6. [Tabular]   txn_count_1h                           (SHAP=0.3263)
+2026-09-10 14:21:38,914 | INFO     |     7. [Tabular]   sender_avg_amount                      (SHAP=0.3241)
+2026-09-10 14:21:38,915 | INFO     |     8. [Tabular]   consecutive_cross_bank_count           (SHAP=0.3125)
+2026-09-10 14:21:38,915 | INFO     |     9. [Tabular]   currency_pair_rarity                   (SHAP=0.2808)
+2026-09-10 14:21:38,915 | INFO     |    10. [Tabular]   amount_paid                            (SHAP=0.2714)
+2026-09-10 14:21:38,916 | INFO     |    11. [Tabular]   sender_amount_cv                       (SHAP=0.2698)
+2026-09-10 14:21:38,916 | INFO     |    12. [Tabular]   sender_amount_std                      (SHAP=0.2538)
+2026-09-10 14:21:38,917 | INFO     |    13. [Tabular]   weekend_activity_ratio                 (SHAP=0.2283)
+2026-09-10 14:21:38,917 | INFO     |    14. [Tabular]   receiver_amount_std                    (SHAP=0.2243)
+2026-09-10 14:21:38,918 | INFO     |    15. [Tabular]   sender_unique_receivers_all            (SHAP=0.2211)
+2026-09-10 14:21:38,918 | INFO     | ========================================================================================
+2026-09-10 14:21:38,918 | INFO     | SAVING PHASE-2 ARTIFACTS (CLEAN ISOLATION)
+2026-09-10 14:21:38,919 | INFO     | ========================================================================================
+2026-09-10 14:21:39,531 | INFO     | Saved isolated model artifact -> C:\Users\INP\Documents\MuleGurd_AI\ml\models\lightgbm_phase2_clean\lgbm_phase2_augmented.pkl
+2026-09-10 14:21:39,535 | INFO     | Saved evaluation metrics JSON -> C:\Users\INP\Documents\MuleGurd_AI\ml\reports\lightgbm_phase2_clean\evaluation_metrics.json
+2026-09-10 14:21:39,543 | INFO     | Saved Executive Summary -> C:\Users\INP\Documents\MuleGurd_AI\ml\reports\lightgbm_phase2_clean\executive_summary.md
+2026-09-10 14:21:39,544 | INFO     | ========================================================================================
+2026-09-10 14:21:39,546 | INFO     | PHASE-2 CLEAN LIGHTGBM PIPELINE COMPLETE
+2026-09-10 14:21:39,546 | INFO     | ========================================================================================
+2026-09-10 14:21:39,548 | INFO     | Final OOT ROC-AUC: 0.9906 | PR-AUC: 0.6803
+2026-09-10 14:21:39,548 | INFO     | Top 1.0% Recall: 85.74% (Fraud Caught: 9,123)
+2026-09-10 14:21:39,549 | INFO     | Baseline model remains 100% untouched.

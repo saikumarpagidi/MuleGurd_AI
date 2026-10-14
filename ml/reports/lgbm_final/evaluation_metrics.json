@@ -1,0 +1,23 @@
+{
+  "pr_auc": 0.5559454038445291,
+  "roc_auc": 0.9891668071220411,
+  "capacity_metrics": [
+    {
+      "top_k_pct": 0.01,
+      "n_flagged": 63797,
+      "true_positives": 8915,
+      "false_positives": 54882,
+      "recall": 0.837875939849624,
+      "precision": 0.13974011317146573
+    },
+    {
+      "top_k_pct": 0.05,
+      "n_flagged": 318983,
+      "true_positives": 9790,
+      "false_positives": 309193,
+      "recall": 0.9201127819548872,
+      "precision": 0.030691290758441674
+    }
+  ],
+  "mandate_met": true
+}

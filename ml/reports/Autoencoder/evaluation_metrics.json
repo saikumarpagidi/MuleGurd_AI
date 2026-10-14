@@ -1,0 +1,71 @@
+{
+  "model_version": "v6",
+  "n_total": 6379648,
+  "n_fraud": 10640,
+  "prevalence": 0.0016678036154972814,
+  "roc_auc": 0.6716983611073066,
+  "pr_auc": 0.0085426310285697,
+  "scoring_method": "per_feature_validation_normalized",
+  "raw_mse_comparison": {
+    "roc_auc": 0.6989016223878393,
+    "pr_auc": 0.009832726640874496
+  },
+  "alert_budgets": [
+    {
+      "alert_pct": 0.1,
+      "cutoff": 23.94171142578125,
+      "flagged_volume": 6380,
+      "caught": 359,
+      "total_fraud": 10640,
+      "recall": 0.0337406015037594,
+      "precision": 0.05626959247648903,
+      "lift": 33.7387399533316
+    },
+    {
+      "alert_pct": 0.5,
+      "cutoff": 3.552305221557617,
+      "flagged_volume": 31899,
+      "caught": 1005,
+      "total_fraud": 10640,
+      "recall": 0.09445488721804511,
+      "precision": 0.031505689833537104,
+      "lift": 18.890527362325688
+    },
+    {
+      "alert_pct": 1.0,
+      "cutoff": 1.9504904747009277,
+      "flagged_volume": 63797,
+      "caught": 1514,
+      "total_fraud": 10640,
+      "recall": 0.14229323308270678,
+      "precision": 0.02373152342586642,
+      "lift": 14.22920732714115
+    },
+    {
+      "alert_pct": 5.0,
+      "cutoff": 0.3925457000732422,
+      "flagged_volume": 318983,
+      "caught": 2110,
+      "total_fraud": 10640,
+      "recall": 0.19830827067669174,
+      "precision": 0.006614772574087021,
+      "lift": 3.9661579532640143
+    }
+  ],
+  "calibrated_p99_9": {
+    "threshold": 3.75883566570307,
+    "flagged": 29657,
+    "caught": 942,
+    "recall": 0.08853383458646616
+  },
+  "cold_start_guard": {
+    "cold_start_rows": 883412,
+    "cold_start_fraud_rows": 3838,
+    "cold_start_pct": 13.847347063662447,
+    "note": "Cold-start rows are new accounts with txn_count_1h==0 AND fan_out_24h==0. They are assigned ae_score=0.0 to prevent false positives on first transactions. 3838 of 883412 cold-start rows are actual fraud \u2014 these are missed by the AE alone but are handled by the supervised LightGBM model."
+  },
+  "split": {
+    "train_end_ns": 1663021980000000000,
+    "validation_end_ns": 1663134360000000000
+  }
+}

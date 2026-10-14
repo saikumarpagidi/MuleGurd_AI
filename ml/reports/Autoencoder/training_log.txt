@@ -1,0 +1,66 @@
+2026-09-17 16:38:47,567 | INFO     | ========================================================================================
+2026-09-17 16:38:47,568 | INFO     | MuleGuard.AI — Autoencoder final Training Pipeline (Isolated Staging)
+2026-09-17 16:38:47,568 | INFO     | ========================================================================================
+2026-09-17 16:38:47,568 | INFO     | Isolation: all artifacts → C:\Users\INP\Documents\MuleGurd_AI\ml\models\Autoencoder / C:\Users\INP\Documents\MuleGurd_AI\ml\reports\Autoencoder
+2026-09-17 16:38:47,568 | INFO     | Existing v2 model at ml/models/autoencoder/ is NEVER touched.
+2026-09-17 16:38:47,568 | INFO     | [mem:startup] RAM 35.3%  (24.1/68.3 GB)
+2026-09-17 16:38:47,568 | INFO     | Loading features_autoencoder.parquet (C:\Users\INP\Documents\MuleGurd_AI\ml\data\processed\features_autoencoder_v3.parquet) ...
+2026-09-17 16:39:04,223 | INFO     |   Loaded 31,898,238 rows | fraud: 35,230 | legit: 31,863,008  (16.7s)
+2026-09-17 16:39:04,224 | INFO     | [mem:after parquet load] RAM 48.9%  (33.4/68.3 GB)
+2026-09-17 16:39:04,224 | INFO     | Computing row-fraction split boundaries ...
+2026-09-17 16:39:04,230 | INFO     | Row-fraction split (matches train_lgbm_aml.py OOT_SPLIT_FRACTION=0.2): train rows 0..22,966,731 | validation rows 22,966,731..25,518,590 | OOT test rows 25,518,590..31,898,238
+2026-09-17 16:39:07,726 | INFO     | Counting temporal partitions ...
+  Partition counts: train=22,944,867 legit | val=2,549,133 legit | test=6,379,648 total (10,640 fraud, 6,369,008 legit)
+2026-09-17 16:39:07,728 | INFO     | Writing binary cache to C:\Users\INP\Documents\MuleGurd_AI\ml\data\processed\autoencoder_cache ...
+2026-09-17 16:39:41,607 | INFO     |   Feature cache written in 33.9s
+2026-09-17 16:39:41,841 | INFO     | Cache: train=22,944,867 | val=2,549,133 | test=6,379,648 (10,640 fraud)
+2026-09-17 16:39:41,841 | INFO     | [mem:after cache load] RAM 46.8%  (32.0/68.3 GB)
+2026-09-17 16:39:41,841 | INFO     | Fitting scaler from training-window legitimate transactions only.
+2026-09-17 16:39:45,649 | INFO     | Resource guardrail: torch.set_num_threads(30) (reserving 2 cores for system stability)
+2026-09-17 16:39:45,686 | INFO     | Model: 21→128→64→12→64→128→21  | params=24,481 | device=cpu
+2026-09-17 16:39:47,168 | INFO     | Training on 22,944,867 legitimate transactions (cpu).
+2026-09-17 16:40:39,417 | INFO     | Epoch 01/20 | train Huber 0.074089 | val MSE 0.113708 | 52.2s
+2026-09-17 16:41:33,889 | INFO     | Epoch 02/20 | train Huber 0.030360 | val MSE 0.090079 | 54.5s
+2026-09-17 16:42:27,752 | INFO     | Epoch 03/20 | train Huber 0.024133 | val MSE 0.067968 | 53.9s
+2026-09-17 16:43:20,289 | INFO     | Epoch 04/20 | train Huber 0.020726 | val MSE 0.039115 | 52.5s
+2026-09-17 16:44:10,675 | INFO     | Epoch 05/20 | train Huber 0.018234 | val MSE 0.028728 | 50.4s
+2026-09-17 16:45:02,654 | INFO     | Epoch 06/20 | train Huber 0.015275 | val MSE 0.023485 | 52.0s
+2026-09-17 16:45:52,708 | INFO     | Epoch 07/20 | train Huber 0.013790 | val MSE 0.022055 | 50.0s
+2026-09-17 16:46:44,606 | INFO     | Epoch 08/20 | train Huber 0.012861 | val MSE 0.017664 | 51.9s
+2026-09-17 16:47:35,662 | INFO     | Epoch 09/20 | train Huber 0.012074 | val MSE 0.015748 | 51.0s
+2026-09-17 16:48:26,763 | INFO     | Epoch 10/20 | train Huber 0.011349 | val MSE 0.013855 | 51.1s
+2026-09-17 16:49:19,795 | INFO     | Epoch 11/20 | train Huber 0.010869 | val MSE 0.013495 | 53.0s
+2026-09-17 16:50:11,716 | INFO     | Epoch 12/20 | train Huber 0.010400 | val MSE 0.011523 | 51.9s
+2026-09-17 16:51:04,355 | INFO     | Epoch 13/20 | train Huber 0.010042 | val MSE 0.010518 | 52.6s
+2026-09-17 16:51:57,011 | INFO     | Epoch 14/20 | train Huber 0.009713 | val MSE 0.010227 | 52.7s
+2026-09-17 16:52:50,287 | INFO     | Epoch 15/20 | train Huber 0.009475 | val MSE 0.009415 | 53.3s
+2026-09-17 16:53:43,390 | INFO     | Epoch 16/20 | train Huber 0.009304 | val MSE 0.009041 | 53.1s
+2026-09-17 16:54:35,443 | INFO     | Epoch 17/20 | train Huber 0.009144 | val MSE 0.008728 | 52.0s
+2026-09-17 16:55:27,042 | INFO     | Epoch 18/20 | train Huber 0.009065 | val MSE 0.008492 | 51.6s
+2026-09-17 16:56:19,452 | INFO     | Epoch 19/20 | train Huber 0.008997 | val MSE 0.008282 | 52.4s
+2026-09-17 16:57:12,105 | INFO     | Epoch 20/20 | train Huber 0.008960 | val MSE 0.008344 | 52.7s
+2026-09-17 16:57:12,124 | INFO     | Best checkpoint reloaded (val MSE=0.008282)
+2026-09-17 16:57:12,125 | INFO     | [mem:after training] RAM 49.7%  (33.9/68.3 GB)
+2026-09-17 16:57:12,125 | INFO     | Fitting per-feature error-normalization statistics on validation set ...
+2026-09-17 16:57:13,931 | INFO     | Scoring validation and untouched OOT test windows ...
+2026-09-17 16:57:21,833 | INFO     | Cold-start guard applied to 883,412 test rows (13.85% of OOT test) — scored 0.0
+2026-09-17 16:57:21,887 | INFO     | Model artifact    -> C:\Users\INP\Documents\MuleGurd_AI\ml\models\Autoencoder\autoencoder_final.pt
+2026-09-17 16:57:21,887 | INFO     | Scaler/threshold  -> C:\Users\INP\Documents\MuleGurd_AI\ml\models\Autoencoder
+2026-09-17 16:57:21,887 | INFO     | Training log      -> C:\Users\INP\Documents\MuleGurd_AI\ml\reports\Autoencoder
+2026-09-17 16:57:21,888 | INFO     | Run ml/evaluation/evaluate_autoencoder_final.py for ROC-AUC/PR-AUC/alert-capacity report.
+2026-09-17 16:57:21,888 | INFO     | ========================================================================================
+2026-09-17 16:57:21,888 | INFO     | Extracting 38 AE signals for Phase-2 LGBM integration
+2026-09-17 16:57:21,888 | INFO     | ========================================================================================
+2026-09-17 16:57:21,889 | INFO     | Loading full features_autoencoder.parquet for signal extraction ...
+2026-09-17 16:57:38,187 | INFO     | Extracting 38 AE signals per row ...
+2026-09-17 16:58:26,622 | INFO     |   Extracted 38 AE signal columns for 31,898,238 rows
+2026-09-17 16:59:15,736 | INFO     | AE signals saved -> C:\Users\INP\Documents\MuleGurd_AI\ml\data\processed\features_ae_signals_final.parquet  (40 cols, 31,898,238 rows)
+2026-09-17 16:59:15,736 | INFO     | [mem:after ae signal extraction] RAM 54.6%  (37.3/68.3 GB)
+2026-09-17 16:59:15,736 | INFO     | ========================================================================================
+2026-09-17 16:59:15,737 | INFO     | TRAINING COMPLETE — final
+2026-09-17 16:59:15,737 | INFO     | ========================================================================================
+2026-09-17 16:59:15,737 | INFO     | Train rows:      22,944,867 (legitimate only)
+2026-09-17 16:59:15,737 | INFO     | Validation rows: 2,549,133   (legitimate only)
+2026-09-17 16:59:15,737 | INFO     | OOT test rows:   6,379,648 (all labels)
+2026-09-17 16:59:15,738 | INFO     | Model: C:\Users\INP\Documents\MuleGurd_AI\ml\models\Autoencoder\autoencoder_final.pt
+2026-09-17 16:59:15,738 | INFO     | Next step: python -X utf8 ml/evaluation/evaluate_autoencoder_final.py

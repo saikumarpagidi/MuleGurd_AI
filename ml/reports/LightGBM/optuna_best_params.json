@@ -1,0 +1,16 @@
+{
+  "best_value_pr_auc": 0.5692507652563323,
+  "best_params": {
+    "scale_pos_weight_multiplier": 0.06818121503156904,
+    "learning_rate": 0.013119860213858855,
+    "num_leaves": 120,
+    "max_depth": 10,
+    "min_data_in_leaf": 1402,
+    "feature_fraction": 0.5392661283932232,
+    "bagging_fraction": 0.5011908323800748,
+    "bagging_freq": 1,
+    "lambda_l1": 1.1009700812828425,
+    "lambda_l2": 0.3048500789351395,
+    "min_gain_to_split": 0.6910753690578371
+  }
+}

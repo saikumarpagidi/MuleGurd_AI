@@ -1,0 +1,55 @@
+PS C:\Users\INP\Documents\MuleGurd_AI> python ml/training/tgn_train.py --batch-size 1024 --epochs 15
+2026-09-03 18:07:09,734 | INFO    | tgn_train | Device: cpu | epochs=15 | warmup=1 | patience=5 | batch=1024 | lr=5e-04 | grad_clip=1.0
+2026-09-03 18:07:09,734 | INFO    | tgn_train | Loading transactions from ml\data\processed\transactions_clean.parquet ...
+2026-09-03 18:07:28,547 | INFO    | tgn_train | Loading Step 5.0 edge features from ml\features\tgn_edge_features.parquet ...
+2026-09-03 18:07:49,292 | INFO    | tgn_train | Dataset spans 27.67 days. Train/Val/Test split at day 15.00 / 20.00 / 27.67.
+2026-09-03 18:08:04,767 | INFO    | tgn_train | Built node index: 2,076,999 unique accounts
+2026-09-03 18:08:15,777 | INFO    | tgn_train | Temporal split -> train=28,869,385 val=3,027,527 test=1,326 events
+2026-09-03 18:08:15,778 | INFO    | tgn_train | Computing per-account fraud activity statistics ...
+2026-09-03 18:10:29,268 | INFO    | tgn_train | Pre-allocating arrays for memory stability ...
+2026-09-03 18:10:59,601 | INFO    | tgn_train | Pandas DataFrames freed. Starting model setup ...
+2026-09-03 18:10:59,672 | INFO    | tgn_train | Warmup epoch 1/1 ...
+2026-09-03 18:10:59,978 | INFO    | tgn_train | Running memory warmup pass (no gradients) over 28,869,385 training events ...
+2026-09-03 18:15:23,168 | INFO    | tgn_train | Warmup complete in 263.2s. Memory bank populated.
+2026-09-03 18:15:23,168 | INFO    | tgn_train | Saving warmup memory state to temp dir: C:\Users\INP\AppData\Local\Temp\tmp3w2iec63_warmup_shards
+2026-09-03 18:15:24,620 | INFO    | tgn_train | Warmup state saved (9 shard files).
+2026-09-03 18:29:22,457 | INFO    | tgn_train | epoch  1 | lr=4.95e-04 | train_loss=0.0013 train_auc=0.9341 (PR=0.1309) | val_auc=0.9620 (PR=0.2256) | 837.1s
+2026-09-03 18:29:22,484 | INFO    | tgn_train |   ↳ New best val_auc=0.9620 — checkpoint saved.
+2026-09-03 18:43:33,314 | INFO    | tgn_train | epoch  2 | lr=4.79e-04 | train_loss=0.0008 train_auc=0.9613 (PR=0.1869) | val_auc=0.9803 (PR=0.3906) | 850.0s
+2026-09-03 18:43:33,325 | INFO    | tgn_train |   ↳ New best val_auc=0.9803 — checkpoint saved.
+2026-09-03 18:57:51,068 | INFO    | tgn_train | epoch  3 | lr=4.53e-04 | train_loss=0.0008 train_auc=0.9643 (PR=0.1966) | val_auc=0.9759 (PR=0.2666) | 856.9s
+2026-09-03 18:57:51,069 | INFO    | tgn_train |   ↳ No improvement (1/5 patience).
+2026-09-03 19:12:23,241 | INFO    | tgn_train | epoch  4 | lr=4.19e-04 | train_loss=0.0008 train_auc=0.9659 (PR=0.2104) | val_auc=0.9789 (PR=0.2675) | 871.3s
+2026-09-03 19:12:23,242 | INFO    | tgn_train |   ↳ No improvement (2/5 patience).
+2026-09-03 19:27:20,462 | INFO    | tgn_train | epoch  5 | lr=3.77e-04 | train_loss=0.0008 train_auc=0.9685 (PR=0.1991) | val_auc=0.9795 (PR=0.3218) | 896.4s
+2026-09-03 19:27:20,462 | INFO    | tgn_train |   ↳ No improvement (3/5 patience).
+2026-09-03 19:42:52,873 | INFO    | tgn_train | epoch  6 | lr=3.31e-04 | train_loss=0.0007 train_auc=0.9724 (PR=0.2260) | val_auc=0.9827 (PR=0.2829) | 931.6s
+2026-09-03 19:42:52,902 | INFO    | tgn_train |   ↳ New best val_auc=0.9827 — checkpoint saved.
+2026-09-03 20:00:12,785 | INFO    | tgn_train | epoch  7 | lr=2.81e-04 | train_loss=0.0007 train_auc=0.9723 (PR=0.2125) | val_auc=0.9767 (PR=0.2468) | 1039.0s
+2026-09-03 20:00:12,785 | INFO    | tgn_train |   ↳ No improvement (1/5 patience).
+2026-09-03 20:20:31,540 | INFO    | tgn_train | epoch  8 | lr=2.29e-04 | train_loss=0.0007 train_auc=0.9748 (PR=0.2397) | val_auc=0.9814 (PR=0.2581) | 1217.9s
+2026-09-03 20:20:31,541 | INFO    | tgn_train |   ↳ No improvement (2/5 patience).
+2026-09-03 20:44:14,896 | INFO    | tgn_train | epoch  9 | lr=1.79e-04 | train_loss=0.0007 train_auc=0.9743 (PR=0.2349) | val_auc=0.9824 (PR=0.2786) | 1422.5s
+2026-09-03 20:44:14,896 | INFO    | tgn_train |   ↳ No improvement (3/5 patience).
+2026-09-03 21:09:14,131 | INFO    | tgn_train | epoch 10 | lr=1.33e-04 | train_loss=0.0007 train_auc=0.9756 (PR=0.2387) | val_auc=0.9834 (PR=0.3172) | 1498.4s
+2026-09-03 21:09:14,141 | INFO    | tgn_train |   ↳ New best val_auc=0.9834 — checkpoint saved.
+2026-09-03 21:34:11,421 | INFO    | tgn_train | epoch 11 | lr=9.11e-05 | train_loss=0.0007 train_auc=0.9755 (PR=0.2464) | val_auc=0.9856 (PR=0.3388) | 1496.4s
+2026-09-03 21:34:11,435 | INFO    | tgn_train |   ↳ New best val_auc=0.9856 — checkpoint saved.
+2026-09-03 22:01:08,241 | INFO    | tgn_train | epoch 12 | lr=5.68e-05 | train_loss=0.0007 train_auc=0.9782 (PR=0.2922) | val_auc=0.9854 (PR=0.3467) | 1616.0s
+2026-09-03 22:01:08,242 | INFO    | tgn_train |   ↳ No improvement (1/5 patience).
+2026-09-03 22:28:45,235 | INFO    | tgn_train | epoch 13 | lr=3.12e-05 | train_loss=0.0006 train_auc=0.9789 (PR=0.3021) | val_auc=0.9873 (PR=0.3711) | 1656.2s
+2026-09-03 22:28:45,247 | INFO    | tgn_train |   ↳ New best val_auc=0.9873 — checkpoint saved.
+2026-09-03 22:57:46,012 | INFO    | tgn_train | epoch 14 | lr=1.54e-05 | train_loss=0.0006 train_auc=0.9789 (PR=0.3145) | val_auc=0.9869 (PR=0.3933) | 1739.9s
+2026-09-03 22:57:46,013 | INFO    | tgn_train |   ↳ No improvement (1/5 patience).
+2026-09-03 23:26:52,557 | INFO    | tgn_train | epoch 15 | lr=1.00e-05 | train_loss=0.0006 train_auc=0.9794 (PR=0.3107) | val_auc=0.9869 (PR=0.4072) | 1745.7s
+2026-09-03 23:26:52,558 | INFO    | tgn_train |   ↳ No improvement (2/5 patience).
+2026-09-03 23:26:52,563 | INFO    | tgn_train | Replaying train+val through best model for OOT test evaluation ...
+2026-09-03 23:33:25,067 | INFO    | tgn_train | Evaluating on TEST split...
+2026-09-03 23:33:25,098 | INFO    | tgn_train | Final OOT TEST AUC = 0.9706 | PR-AUC = 0.9702 (n=1326 events, 782 positive)
+2026-09-03 23:33:25,142 | INFO    | tgn_train | No Neo4j hints — using transaction fraud-activity labels for MULE heuristic.
+2026-09-03 23:33:34,280 | INFO    | tgn_train |   Role NONE: n=4995, accuracy=0.0795
+2026-09-03 23:33:34,280 | INFO    | tgn_train |   Role MULE: n=5, accuracy=0.6000
+2026-09-03 23:33:34,280 | INFO    | tgn_train | Ring role accuracy (vs HEURISTIC pseudo-labels) = 0.0800
+2026-09-03 23:33:36,105 | INFO    | tgn_train | Saved final model to ml\models\tgn_v1_best.pt
+2026-09-03 23:33:36,107 | INFO    | tgn_train | [PASS] TGN test AUC=0.9706 vs Static GNN AUC=0.8731 | delta=0.0975 (gate:>=+0.01) | AUC gate (>=0.97): PASS
+PS C:\Users\INP\Documents\MuleGurd_AI>

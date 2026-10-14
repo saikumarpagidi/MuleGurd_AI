@@ -24,25 +24,27 @@
     </properties>
 
     <dependencies>
-        <!-- Reactive web framework -->
+        <!-- ─────────────────────────────────────────────────────────────── -->
+        <!-- CORE: Reactive web framework                                    -->
+        <!-- ─────────────────────────────────────────────────────────────── -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
-        <!-- Health and metrics endpoints -->
+        <!-- Health endpoints + Prometheus metrics -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-
-        <!-- Prometheus metrics export -->
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
 
-        <!-- Circuit breakers for downstream model service calls -->
+        <!-- ─────────────────────────────────────────────────────────────── -->
+        <!-- RESILIENCE: Circuit breakers for all 3 model service calls     -->
+        <!-- ─────────────────────────────────────────────────────────────── -->
         <dependency>
             <groupId>io.github.resilience4j</groupId>
             <artifactId>resilience4j-spring-boot3</artifactId>
@@ -54,19 +56,49 @@
             <version>${resilience4j.version}</version>
         </dependency>
 
-        <!-- Reactive PostgreSQL — uncomment when audit log writes are integrated -->
-        <!--
+        <!-- ─────────────────────────────────────────────────────────────── -->
+        <!-- KAFKA: Transaction event consumer + alert producer              -->
+        <!-- ─────────────────────────────────────────────────────────────── -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
+        <!-- ─────────────────────────────────────────────────────────────── -->
+        <!-- DATABASE: Reactive PostgreSQL (R2DBC) for scoring_decisions     -->
+        <!-- ─────────────────────────────────────────────────────────────── -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-r2dbc</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.r2dbc</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>r2dbc-postgresql</artifactId>
+            <version>1.0.5.RELEASE</version>
         </dependency>
-        -->
 
-        <!-- Testing -->
+        <!-- ─────────────────────────────────────────────────────────────── -->
+        <!-- JSON: Jackson for serialization (DTOs + Kafka messages)        -->
+        <!-- ─────────────────────────────────────────────────────────────── -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+
+        <!-- @ConfigurationProperties binding -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- ─────────────────────────────────────────────────────────────── -->
+        <!-- TESTING                                                         -->
+        <!-- ─────────────────────────────────────────────────────────────── -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -75,6 +107,11 @@
         <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

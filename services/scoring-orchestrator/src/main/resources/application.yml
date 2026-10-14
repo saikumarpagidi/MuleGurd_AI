@@ -5,7 +5,33 @@ spring:
   application:
     name: scoring-orchestrator
 
-# MuleGuard custom properties
+  # ── R2DBC (Reactive PostgreSQL) ───────────────────────────────────────────
+  r2dbc:
+    url: ${POSTGRES_R2DBC_URL:r2dbc:postgresql://localhost:5432/muleguard}
+    username: ${POSTGRES_USER:muleguard}
+    password: ${POSTGRES_PASSWORD:muleguard}
+    pool:
+      initial-size: 5
+      max-size: 20
+      max-idle-time: 30m
+      validation-query: SELECT 1
+
+  # ── Kafka ─────────────────────────────────────────────────────────────────
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: scoring-orchestrator
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "ai.muleguard.model"
+        spring.json.value.default.type: ai.muleguard.model.ScoringRequest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+# ── MuleGuard custom properties ───────────────────────────────────────────────
 muleguard:
   service:
     name: scoring-orchestrator
@@ -14,32 +40,58 @@ muleguard:
   services:
     ai-engine:
       url: ${AI_ENGINE_URL:http://localhost:8002}
-      timeout-ms: 10000
+      timeout-ms: ${AI_ENGINE_TIMEOUT_MS:5000}
     graph-service:
       url: ${GRAPH_SERVICE_URL:http://localhost:8003}
-      timeout-ms: 25000
+      timeout-ms: ${GRAPH_SERVICE_TIMEOUT_MS:10000}
     feature-service:
       url: ${FEATURE_SERVICE_URL:http://localhost:8004}
-      timeout-ms: 5000
+      timeout-ms: ${FEATURE_SERVICE_TIMEOUT_MS:2000}
 
   # Risk Fusion Weights — must sum to 1.0
+  # APPROVE < 0.45  |  REVIEW 0.45-0.74  |  BLOCK >= 0.75
   weights:
     tgn: ${WEIGHT_TGN:0.50}
     lgbm: ${WEIGHT_LGBM:0.30}
     autoencoder: ${WEIGHT_AUTOENCODER:0.15}
     device: ${WEIGHT_DEVICE:0.05}
 
-  # Decision Thresholds
+  # Decision Thresholds (must match ai-engine/app/config.py)
   thresholds:
     review: ${RISK_THRESHOLD_REVIEW:0.45}
     block: ${RISK_THRESHOLD_BLOCK:0.75}
 
-# Spring Boot Actuator — expose health and Prometheus metrics
+  # Kafka topics
+  kafka:
+    topics:
+      transactions: muleguard.transactions
+      alerts: muleguard.alerts
+
+# ── Resilience4j Circuit Breakers ─────────────────────────────────────────────
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+    instances:
+      aiEngine:
+        base-config: default
+      graphService:
+        base-config: default
+      featureService:
+        base-config: default
+
+# ── Spring Boot Actuator ───────────────────────────────────────────────────────
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,prometheus,metrics
+        include: health,info,prometheus,metrics,circuitbreakers
       base-path: /actuator
   endpoint:
     health:
@@ -48,12 +100,16 @@ management:
     export:
       prometheus:
         enabled: true
+  health:
+    circuitbreakers:
+      enabled: true
 
 logging:
   level:
     ai.muleguard: INFO
     org.springframework.web.reactive: WARN
     reactor.netty: WARN
+    org.springframework.kafka: WARN
 
 ---
 # Docker environment profile
@@ -63,3 +119,7 @@ spring:
       on-profile: docker
   application:
     name: scoring-orchestrator
+  r2dbc:
+    url: r2dbc:postgresql://postgres:5432/muleguard
+  kafka:
+    bootstrap-servers: kafka:9092

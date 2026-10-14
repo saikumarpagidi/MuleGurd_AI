@@ -1,0 +1,34 @@
+{
+  "feature_names": [
+    "log_amount_paid",
+    "payment_format_encoded",
+    "is_cross_bank",
+    "is_cash_payment",
+    "is_bitcoin_transaction",
+    "structuring_threshold_flag",
+    "amount_ratio",
+    "amount_difference",
+    "hour_sin",
+    "hour_cos",
+    "weekday_sin",
+    "weekday_cos",
+    "is_cross_currency"
+  ],
+  "feature_count": 13,
+  "definitions": {
+    "log_amount_paid": "log1p(amount)",
+    "payment_format_encoded": "categorical id, mapping={'ACH': 0, 'Cash': 1, 'Cheque': 2, 'Credit Card': 3, 'Bitcoin': 4, 'Reinvestment': 5, 'Wire': 6}",
+    "is_cross_bank": "1.0 if from_bank != to_bank else 0.0",
+    "is_cash_payment": "1.0 if payment_format == 'Cash' else 0.0",
+    "is_bitcoin_transaction": "1.0 if payment_format == 'Bitcoin' else 0.0",
+    "structuring_threshold_flag": "1.0 if 8000.0 <= amount <= 9999.99 else 0.0 (CTR evasion band)",
+    "amount_ratio": "outbound_amount / (most_recent_inbound_amount_within_24.0h + eps), clipped to [0, 5]; 0.0 if no qualifying inbound txn found. Transit-mule 'peeling chain' signature.",
+    "amount_difference": "most_recent_qualifying_inbound_amount - outbound_amount; 0.0 if no match.",
+    "hour_sin": "sin(2*pi*hour_of_day/24)",
+    "hour_cos": "cos(2*pi*hour_of_day/24)",
+    "weekday_sin": "sin(2*pi*weekday/7)",
+    "weekday_cos": "cos(2*pi*weekday/7)",
+    "is_cross_currency": "1.0 if payment_currency != receiving_currency else 0.0"
+  },
+  "used_for": "RBI explainability documentation (Sprint 11) and TGN message function e_uv (Sprint 5)"
+}

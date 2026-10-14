@@ -7,15 +7,17 @@
 .env.local
 .env.*.local
 
-# --- ML Data & Models (large binary files) ---
+# --- ML Data & Models (large binary files >100MB) ---
 ml/data/
 ml/models/
+ml/features/*.parquet
 ml/results/*.pkl
 *.pkl
 *.pt
 *.mar
 *.h5
 *.parquet
+*.csv.gz
 # --- Python ---
 __pycache__/
 *.py[cod]
@@ -74,3 +76,4 @@ kaggle.json
 MuleGuardAI_Developer_Handoff.md
 SENTINEL_enterprise_document.md
 task.md
+recovered_chats/

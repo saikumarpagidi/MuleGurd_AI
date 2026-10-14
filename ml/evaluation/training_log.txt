@@ -1,0 +1,65 @@
+2026-09-10 11:42:18,521 | INFO | Execution device: cpu (AMP: False)
+2026-09-10 11:42:18,521 | INFO | Computing SHA-256 hash of source dataset...
+2026-09-10 11:42:19,644 | INFO | Consuming canonical split from: C:\Users\CDAC\Downloads\MuleGurd_AI-main\MuleGurd_AI-main\ml\data\processed\split_metadata.json
+2026-09-10 11:42:19,644 | INFO |   Canonical Split Targets: total=31,898,238 | fit_target=22,966,731 | val_target=25,518,590
+2026-09-10 11:42:19,644 | INFO | Exact row partitions: Fit [0 : 22,966,731] | Val [22,966,731 : 25,518,590] | OOT [25,518,590 : 31,898,238]
+2026-09-10 11:42:19,644 | INFO | Pass 1/2: Scanning partitions & filtering train legit rows...
+2026-09-10 11:42:21,475 | INFO | Partition counts: {'train': 22944867, 'validation': 2551859, 'test': 6379648} (Excluded 21,864 fraud rows from training)
+2026-09-10 11:42:21,475 | INFO | Pass 2/2: Extracting feature matrix to disk-backed memmaps...
+2026-09-10 11:42:38,476 | INFO | Applying signed-log1p and quantile outlier clipping...
+2026-09-10 11:42:54,676 | INFO | Cache successfully validated and written.
+2026-09-10 11:42:54,688 | INFO | Computing streaming standard scaler on clean legitimate train data...
+2026-09-10 11:43:00,530 | INFO | ============================================================
+2026-09-10 11:43:00,530 | INFO | STARTING ONE-CLASS ANOMALY AUTOENCODER TRAINING
+2026-09-10 11:43:00,530 | INFO |    Fit Ratio: 72.0% | Val Ratio: 8.0% | OOT Ratio: 20.0%
+2026-09-10 11:43:00,530 | INFO |    Epochs: 6 | Batch: 4096 | Latent Dim: 4 | Block: 65536 rows
+2026-09-10 11:43:00,530 | INFO | ============================================================
+2026-09-10 11:43:35,166 | INFO |   Epoch 1 | Step 1500/5602 | Train Loss: 4.694285
+2026-09-10 11:44:10,001 | INFO |   Epoch 1 | Step 3000/5602 | Train Loss: 9.227175
+2026-09-10 11:44:45,007 | INFO |   Epoch 1 | Step 4500/5602 | Train Loss: 14.716226
+2026-09-10 11:45:13,573 | INFO | Epoch 1 (130.0s) | Train Loss: 10.978518 | Val ROC-AUC: 0.7692 | Val PR-AUC: 0.004566
+2026-09-10 11:45:13,605 | INFO |   [*] Best validation checkpoint saved (epoch 1, PR-AUC=0.004566, ROC-AUC=0.7692)
+2026-09-10 11:45:49,154 | INFO |   Epoch 2 | Step 1500/5602 | Train Loss: 4.653290
+2026-09-10 11:46:24,706 | INFO |   Epoch 2 | Step 3000/5602 | Train Loss: 5.384719
+2026-09-10 11:47:00,438 | INFO |   Epoch 2 | Step 4500/5602 | Train Loss: 6.351282
+2026-09-10 11:47:29,651 | INFO | Epoch 2 (132.8s) | Train Loss: 7.955469 | Val ROC-AUC: 0.7608 | Val PR-AUC: 0.004889
+2026-09-10 11:47:29,665 | INFO |   [*] Best validation checkpoint saved (epoch 2, PR-AUC=0.004889, ROC-AUC=0.7608)
+2026-09-10 11:48:04,881 | INFO |   Epoch 3 | Step 1500/5602 | Train Loss: 7.234795
+2026-09-10 11:48:39,686 | INFO |   Epoch 3 | Step 3000/5602 | Train Loss: 4.348536
+2026-09-10 11:49:15,461 | INFO |   Epoch 3 | Step 4500/5602 | Train Loss: 8.465413
+2026-09-10 11:49:43,819 | INFO | Epoch 3 (131.1s) | Train Loss: 7.457932 | Val ROC-AUC: 0.6895 | Val PR-AUC: 0.003201
+2026-09-10 11:50:18,956 | INFO |   Epoch 4 | Step 1500/5602 | Train Loss: 15.599758
+2026-09-10 11:50:53,778 | INFO |   Epoch 4 | Step 3000/5602 | Train Loss: 4.071862
+2026-09-10 11:51:29,078 | INFO |   Epoch 4 | Step 4500/5602 | Train Loss: 3.925705
+2026-09-10 11:51:57,432 | INFO | Epoch 4 (130.6s) | Train Loss: 7.211297 | Val ROC-AUC: 0.6922 | Val PR-AUC: 0.003516
+2026-09-10 11:52:32,661 | INFO |   Epoch 5 | Step 1500/5602 | Train Loss: 5.616745
+2026-09-10 11:53:07,392 | INFO |   Epoch 5 | Step 3000/5602 | Train Loss: 6.007716
+2026-09-10 11:53:42,192 | INFO |   Epoch 5 | Step 4500/5602 | Train Loss: 4.381652
+2026-09-10 11:54:15,000 | INFO | Epoch 5 (132.0s) | Train Loss: 6.124500 | Val ROC-AUC: 0.7015 | Val PR-AUC: 0.003820
+2026-09-10 11:54:52,672 | INFO |   Epoch 6 | Step 1500/5602 | Train Loss: 5.644624
+2026-09-10 11:55:40,116 | INFO |   Epoch 6 | Step 3000/5602 | Train Loss: 12.172110
+2026-09-10 11:56:35,858 | INFO |   Epoch 6 | Step 4500/5602 | Train Loss: 6.741944
+2026-09-10 11:57:19,130 | INFO | Epoch 6 (184.2s) | Train Loss: 6.848799 | Val ROC-AUC: 0.7242 | Val PR-AUC: 0.004081
+2026-09-10 11:57:19,331 | INFO | Loading weights from C:\Users\CDAC\Downloads\MuleGurd_AI-main\MuleGurd_AI-main\ml\models\autoencoder_v4\autoencoder_best_weights.pth (best epoch: 2) for OOT evaluation...
+2026-09-10 11:57:19,355 | INFO | Scoring untouched Out-Of-Time (OOT) Test partition...
+2026-09-10 12:10:11,306 | INFO | Computing SHA-256 hash of source dataset...
+2026-09-10 12:10:12,288 | INFO | Valid cryptographic match. Reusing feature cache at C:\Users\CDAC\Downloads\MuleGurd_AI-main\MuleGurd_AI-main\ml\data\processed\autoencoder_nn_v4_cache
+2026-09-10 12:10:12,288 | INFO | Computing streaming standard scaler on clean legitimate train data...
+2026-09-10 12:10:17,537 | INFO | ============================================================
+2026-09-10 12:10:17,537 | INFO | STARTING ONE-CLASS ANOMALY AUTOENCODER TRAINING
+2026-09-10 12:10:17,537 | INFO |    Fit Ratio: 72.0% | Val Ratio: 8.0% | OOT Ratio: 20.0%
+2026-09-10 12:10:17,539 | INFO |    Epochs: 6 | Batch: 4096 | Latent Dim: 4 | Block: 65536 rows
+2026-09-10 12:10:17,539 | INFO | ============================================================
+2026-09-10 12:10:17,541 | INFO | Evaluation-only mode: Skipping training loop, using existing best checkpoint.
+2026-09-10 12:10:17,637 | INFO | Loading weights from C:\Users\CDAC\Downloads\MuleGurd_AI-main\MuleGurd_AI-main\ml\models\autoencoder_v4\autoencoder_best_weights.pth (best epoch: 2) for OOT evaluation...
+2026-09-10 12:10:17,641 | INFO | Scoring untouched Out-Of-Time (OOT) Test partition...
+2026-09-10 12:10:26,393 | INFO | ============================================================
+2026-09-10 12:10:26,393 | INFO | PRODUCTION AUTOENCODER TRAINING & OOT EVALUATION COMPLETE!
+2026-09-10 12:10:26,393 | INFO |    Best epoch: 2
+2026-09-10 12:10:26,393 | INFO |    Test ROC-AUC: 0.8241
+2026-09-10 12:10:26,405 | INFO |    Test PR-AUC: 0.013090 (Baseline: 0.001668)
+2026-09-10 12:10:26,405 | INFO |    Recall @ 1% Budget: 13.1%
+2026-09-10 12:10:26,405 | INFO |    Recall @ 2% Budget: 25.84%
+2026-09-10 12:10:26,405 | INFO |    Recall @ 5% Budget: 47.74% (5080 Mules Caught)
+2026-09-10 12:10:26,405 | INFO |    Saved model and metrics to: C:\Users\CDAC\Downloads\MuleGurd_AI-main\MuleGurd_AI-main\ml\models\autoencoder_v4
+2026-09-10 12:10:26,405 | INFO | ============================================================

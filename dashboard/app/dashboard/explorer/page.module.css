@@ -1,0 +1,377 @@
+/* ═══════════════════════════════════════════════════════════
+   Graph Explorer Page — Enterprise Layout Styles
+═══════════════════════════════════════════════════════════ */
+
+/* ── Engine Banner ───────────────────────────────────────── */
+.engineBanner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: linear-gradient(135deg,
+    rgba(0, 212, 255, 0.06) 0%,
+    rgba(13, 17, 23, 0.95) 50%,
+    rgba(124, 58, 237, 0.05) 100%
+  );
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 14px 20px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.engineBanner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.5), transparent);
+}
+
+.engineLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.enginePulse {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 12px #10b981;
+  animation: enginePulse 2s infinite ease-in-out;
+  flex-shrink: 0;
+}
+
+@keyframes enginePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.8); }
+  50%       { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+}
+
+.engineTitle {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: -0.01em;
+}
+
+.engineSub {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.engineBadges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.engineBadge {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.6875rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: #94a3b8;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+/* ── Toolbar ─────────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.searchBar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.searchInput {
+  flex: 1;
+  max-width: 500px;
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(10, 14, 26, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  transition: border-color 200ms, box-shadow 200ms;
+}
+
+.searchInput:focus {
+  border-color: rgba(0, 212, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+  outline: none;
+}
+
+.limitSelect {
+  background: rgba(10, 14, 26, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 0.8125rem;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  transition: border-color 200ms;
+}
+
+.limitSelect:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Quick target chips */
+.quickTargets {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.quickLabel {
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  margin-right: 3px;
+}
+
+.targetChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 170ms ease;
+  white-space: nowrap;
+}
+
+.targetChip:hover {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.35);
+  color: #00D4FF;
+  transform: translateY(-1px);
+}
+
+.targetChipActive {
+  background: rgba(0, 212, 255, 0.12);
+  border-color: rgba(0, 212, 255, 0.5);
+  color: #00D4FF;
+  font-weight: 600;
+}
+
+.targetTag {
+  font-size: 0.5625rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Summary Row ─────────────────────────────────────────── */
+.summaryRow {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 1280px) { .summaryRow { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 640px)  { .summaryRow { grid-template-columns: repeat(2, 1fr); } }
+
+.summaryCard {
+  background: rgba(13, 17, 23, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 200ms, box-shadow 200ms;
+}
+
+.summaryCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: rgba(0, 212, 255, 0.2);
+}
+
+.summaryCard:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.summaryLabel {
+  font-size: 0.5875rem;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.summaryValue {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.summarySub {
+  font-size: 0.6875rem;
+  color: #334155;
+  margin-top: 2px;
+}
+
+/* ── Filter Strip ────────────────────────────────────────── */
+.filterStrip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.filterGroup {
+  display: flex;
+  gap: 5px;
+  background: rgba(10, 14, 26, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 9px;
+  padding: 4px;
+}
+
+.filterBtn {
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 14px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #4B5563;
+  cursor: pointer;
+  transition: all 160ms ease;
+  white-space: nowrap;
+}
+
+.filterBtn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+}
+
+.filterBtnActive {
+  background: rgba(0, 212, 255, 0.12);
+  color: #00D4FF;
+  font-weight: 700;
+}
+
+/* ── Tab Navigation ──────────────────────────────────────── */
+.tabNav {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.tabBtn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 9px 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 160ms ease;
+  letter-spacing: -0.01em;
+  margin-bottom: -1px;
+}
+
+.tabBtn:hover { color: #64748b; }
+
+.tabBtnActive {
+  color: #00D4FF;
+  border-bottom-color: #00D4FF;
+}
+
+/* ── Table Card ──────────────────────────────────────────── */
+.tableCard {
+  background: rgba(13, 17, 23, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.tableTitle {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: -0.01em;
+}
+
+.tableSubtitle {
+  font-size: 0.75rem;
+  color: #334155;
+}
+
+/* Centered (focal) row highlight */
+.centeredRow > td {
+  background: rgba(0, 212, 255, 0.06) !important;
+}
+
+.centeredRow > td:first-child {
+  border-left: 3px solid #00D4FF;
+}
+
+/* Pivot button */
+.pivotBtn {
+  background: rgba(0, 212, 255, 0.08);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 5px;
+  color: #00D4FF;
+  padding: 3px 10px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms ease;
+  white-space: nowrap;
+}
+
+.pivotBtn:hover {
+  background: #00D4FF;
+  color: #06080F;
+  border-color: #00D4FF;
+}

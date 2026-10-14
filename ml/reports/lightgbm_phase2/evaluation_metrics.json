@@ -1,0 +1,50 @@
+{
+  "pr_auc": 0.6917397725747267,
+  "roc_auc": 0.990533259060407,
+  "best_iteration": 5996,
+  "total_test_rows": 6379648,
+  "total_test_fraud": 10640,
+  "alert_budgets": [
+    {
+      "top_k_pct": 0.001,
+      "alert_pct": 0.1,
+      "flagged": 6380,
+      "caught": 5605,
+      "total_fraud": 10640,
+      "recall": 0.5267857142857143,
+      "precision": 0.8785266457680251,
+      "lift": 526.7566502463054
+    },
+    {
+      "top_k_pct": 0.005,
+      "alert_pct": 0.5,
+      "flagged": 31899,
+      "caught": 8433,
+      "total_fraud": 10640,
+      "recall": 0.7925751879699248,
+      "precision": 0.2643656540957397,
+      "lift": 158.5112609417836
+    },
+    {
+      "top_k_pct": 0.01,
+      "alert_pct": 1.0,
+      "flagged": 63797,
+      "caught": 9111,
+      "total_fraud": 10640,
+      "recall": 0.8562969924812031,
+      "precision": 0.1428123579478659,
+      "lift": 85.62900129298748
+    },
+    {
+      "top_k_pct": 0.05,
+      "alert_pct": 5.0,
+      "flagged": 318983,
+      "caught": 9809,
+      "total_fraud": 10640,
+      "recall": 0.9218984962406015,
+      "precision": 0.03075085506124151,
+      "lift": 18.43793524339655
+    }
+  ],
+  "mandate_met": true
+}

@@ -1,0 +1,30 @@
+{
+  "pr_auc": 0.6753599089298838,
+  "roc_auc": 0.990359804592343,
+  "capacity_metrics": [
+    {
+      "top_k_pct": 0.01,
+      "n_flagged": 63797,
+      "true_positives": 9101,
+      "false_positives": 54696,
+      "recall": 0.8553571428571428,
+      "precision": 0.14265561076539648
+    },
+    {
+      "top_k_pct": 0.05,
+      "n_flagged": 318983,
+      "true_positives": 9798,
+      "false_positives": 309185,
+      "recall": 0.9208646616541354,
+      "precision": 0.030716370464883708
+    }
+  ],
+  "mandate_met": true,
+  "paper_comparable": {
+    "minority_f1_at_0_5": 0.44944135646510586,
+    "minority_precision_at_0_5": 0.3204307101112801,
+    "minority_recall_at_0_5": 0.7523496240601504,
+    "paper_gfp_lightgbm_hi_large_f1": 0.4867,
+    "paper_gfp_lightgbm_hi_medium_f1": 0.5948
+  }
+}

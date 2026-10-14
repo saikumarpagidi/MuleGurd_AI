@@ -1,0 +1,317 @@
+.layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+.formCol { position: sticky; top: 80px; }
+
+.resultCol {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Empty State */
+.emptyState {
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  color: var(--text-faint);
+  line-height: 1;
+}
+
+.emptyTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.emptySubtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 340px;
+  margin: 0;
+}
+
+/* Loading */
+.loadingState {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+
+.loadingSpinner {
+  position: relative;
+  width: 56px;
+  height: 56px;
+}
+
+.spinRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--border-default);
+  border-top-color: var(--cyan);
+  animation: spin 0.8s linear infinite;
+  box-shadow: 0 0 16px rgba(0, 212, 255, 0.3);
+}
+
+.spinCore {
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-bottom-color: var(--violet);
+  animation: spin 1.2s linear infinite reverse;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loadingText {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.loadingSubtext {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Result Panel */
+.resultPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Decision Banner */
+.decisionBanner {
+  border-radius: var(--radius-lg);
+  border: 1px solid;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.decisionScore {
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  margin: 8px 0 0;
+  letter-spacing: -0.03em;
+}
+
+.decisionMeta {
+  display: flex;
+  gap: 24px;
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
+}
+
+.metaLabel {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.metaValue {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Gauge */
+.gaugeSection {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-cyan);
+}
+
+/* Explanation */
+.explanationCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.expHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.expTitle {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.expMode {
+  font-size: 0.6875rem;
+  color: var(--violet);
+  font-weight: 600;
+}
+
+.expText {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0 0 12px;
+}
+
+.expTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.expTag {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: var(--violet-dim);
+  color: var(--violet);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+}
+
+.degradedBanner {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 0.75rem;
+  color: #F59E0B;
+  line-height: 1.5;
+}
+
+/* ─── SHAP & AE Feature Breakdown ─────────────────────────────── */
+.shapSection {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-subtle, #1e2430);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.shapHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.875rem;
+}
+
+.shapTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.shapSubtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748b);
+}
+
+.shapRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.75rem;
+}
+
+.shapFeatureName {
+  width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--font-mono, monospace);
+  color: #cbd5e1;
+}
+
+.shapBarContainer {
+  flex: 1;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.shapBar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.shapValueBadge {
+  width: 60px;
+  text-align: right;
+  font-family: var(--font-mono, monospace);
+  font-weight: 600;
+}
+
+.aeBarHigh { background: #ef4444; }
+.aeBarMedium { background: #f59e0b; }
+.aeBarLow { background: #64748b; }
+
+.aeValHigh { color: #ef4444; }
+.aeValMedium { color: #f59e0b; }
+.aeValLow { color: #64748b; }
+
+.shapBarRisk {
+  background: #ef4444;
+}
+
+.shapBarSafe {
+  background: #10b981;
+}
+
+.shapValRisk { color: #ef4444; }
+.shapValSafe { color: #10b981; }

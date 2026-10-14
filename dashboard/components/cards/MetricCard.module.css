@@ -1,0 +1,113 @@
+.card {
+  position: relative;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px 18px;
+  overflow: hidden;
+  transition:
+    border-color var(--ease-normal),
+    box-shadow var(--ease-normal),
+    transform var(--ease-normal);
+  cursor: default;
+}
+
+.card:hover {
+  border-color: var(--border-default);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.04);
+  transform: translateY(-2px);
+}
+
+.card:hover .glowBlob {
+  opacity: 1;
+}
+
+.card.highlight {
+  background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(0, 212, 255, 0.04) 100%);
+  border-color: rgba(0, 212, 255, 0.22);
+  box-shadow: 0 0 28px rgba(0, 212, 255, 0.07);
+}
+
+/* Top accent line */
+.accentLine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--card-accent, var(--cyan));
+  opacity: 0.75;
+  border-radius: 2px 2px 0 0;
+}
+
+/* Glow blob that appears on hover */
+.glowBlob {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--card-accent, var(--cyan));
+  opacity: 0;
+  filter: blur(28px);
+  transition: opacity var(--ease-slow);
+  pointer-events: none;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon {
+  font-size: 0.875rem;
+  opacity: 0.7;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.value {
+  font-size: 1.875rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.subValue {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 7px;
+  letter-spacing: 0.01em;
+}
+
+/* Trend */
+.trend {
+  font-size: 0.625rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.trendUp     { background: rgba(16, 185, 129, 0.12); color: #10B981; }
+.trendDown   { background: rgba(239, 68, 68, 0.12);  color: #EF4444; }
+.trendNeutral{ background: rgba(100, 116, 139, 0.12); color: var(--text-muted); }

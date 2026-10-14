@@ -75,7 +75,7 @@ MERGE (c)-[:SENT {
 // Run these to confirm setup is correct:
 
 SHOW CONSTRAINTS;
-// Expected: 2 rows
+// Expected: 2+ rows
 
 MATCH (n:Account) WHERE n.is_test_node = true RETURN n.token AS token;
 // Expected: 3 rows
@@ -87,3 +87,79 @@ MATCH (n:Account) WHERE n.is_test_node = true RETURN n.token AS token;
 // WHERE token STARTS WITH 'TEST_ACCT'
 // RETURN token, componentId ORDER BY componentId;
 // CALL gds.graph.drop('test-ring-graph');
+
+// ============================================================
+// GDS ALGORITHM REFERENCE QUERIES
+// These are the same queries run by scripts/seed_neo4j.py
+// Run manually in Neo4j Browser after the full IBM AML load.
+// ============================================================
+
+// ── GDS: Project graph into in-memory catalog ────────────
+CALL gds.graph.project(
+  'muleguard_aml_graph',
+  'Account',
+  {SENT: {orientation: 'NATURAL'}}
+)
+YIELD graphName, nodeCount, relationshipCount, projectMillis;
+
+// ── GDS: PageRank (write mode) ───────────────────────────
+// Writes Account.pagerank (higher = more structurally important hub)
+
+CALL gds.pageRank.write('muleguard_aml_graph', {
+  maxIterations: 20,
+  dampingFactor: 0.85,
+  writeProperty: 'pagerank'
+})
+YIELD nodePropertiesWritten, ranIterations;
+
+// ── GDS: Louvain Community Detection (write mode) ─────────
+// Writes Account.community_id (accounts in same syndicate share a community)
+
+CALL gds.louvain.write('muleguard_aml_graph', {
+  writeProperty: 'community_id',
+  maxLevels: 10,
+  maxIterations: 10,
+  tolerance: 0.0001
+})
+YIELD nodePropertiesWritten, communityCount, modularity;
+
+// Verify: should return 100+ communities for the full IBM AML dataset
+MATCH (a:Account) RETURN count(DISTINCT a.community_id) AS community_count;
+
+// ── GDS: Strongly Connected Components (ring detection) ───
+// Finds accounts in circular money flows (A→B→C→A patterns)
+// Accounts in SCC components of size ≥ 3 are flagged as ring members.
+
+// Step 1 — Stream SCC to find ring components:
+CALL gds.scc.stream('muleguard_aml_graph')
+YIELD nodeId, componentId
+WITH componentId, count(nodeId) AS size
+WHERE size >= 3
+RETURN componentId, size ORDER BY size DESC LIMIT 20;
+
+// Step 2 — Verify ring flag was written:
+MATCH (a:Account) WHERE a.in_scc_ring = true RETURN count(a) AS ring_accounts;
+
+// ── POST-GDS: Drop in-memory projection (free memory) ────
+CALL gds.graph.drop('muleguard_aml_graph');
+
+// ── QUERY: Top PageRank accounts (likely hubs/mules) ──────
+// MATCH (a:Account)
+// WHERE a.pagerank IS NOT NULL
+// RETURN a.token, a.pagerank, a.community_id, a.in_scc_ring
+// ORDER BY a.pagerank DESC LIMIT 20;
+
+// ── QUERY: Top communities by flagged account volume ─────
+// MATCH (a:Account)
+// WHERE a.is_laundering_flag = 1
+// WITH a.community_id AS community, count(a) AS flagged_in_community
+// WHERE community IS NOT NULL
+// RETURN community, flagged_in_community
+// ORDER BY flagged_in_community DESC LIMIT 10;
+
+// ── QUERY: Verify schema integrity ───────────────────────
+// MATCH (a:Account) RETURN count(a) AS total_accounts;
+// MATCH ()-[r:SENT]->() RETURN count(r) AS total_transactions;
+// MATCH (a:Account) WHERE a.pagerank IS NULL RETURN count(a) AS missing_pagerank;
+// MATCH (a:Account) WHERE a.community_id IS NULL RETURN count(a) AS missing_community;
+// MATCH (a:Account) WHERE a.in_scc_ring IS NULL RETURN count(a) AS missing_scc;

@@ -1,0 +1,163 @@
+2026-09-17 12:20:53,665 | INFO     | ========================================================================================
+2026-09-17 12:20:53,666 | INFO     | MuleGuard.AI — Enterprise Training Pipeline (Single-Model, Final)
+2026-09-17 12:20:53,666 | INFO     | ========================================================================================
+2026-09-17 12:20:53,666 | INFO     | Resource guardrails: n_jobs=4 (of 32 logical cores), tuning_sample_rows=2,000,000, max_num_leaves=128, final_round_ceiling=6000, early_stopping_patience=150
+2026-09-17 12:20:53,666 | INFO     | [mem check: startup] RAM used=15.6% (10.6GB / 68.3GB)
+2026-09-17 12:20:53,676 | INFO     | Loading engineered features from: ml\data\processed\features_lgbm_v3.parquet (68 columns)
+2026-09-17 12:20:56,661 | INFO     | Sorting chronologically (required for a valid OOT split)...
+2026-09-17 12:22:19,449 | INFO     | Loaded 31,898,238 rows x 66 features in 85.8s (feature matrix: 8.42 GB)
+2026-09-17 12:22:19,450 | INFO     | [mem check: after load+prepare] RAM used=53.8% (36.8GB / 68.3GB)
+2026-09-17 12:22:19,491 | INFO     | Fraud rate: 0.1104% (35,230 fraud / 31,898,238 total)
+2026-09-17 12:22:19,492 | INFO     | Feature set (66 columns): ['amount_paid', 'amount_received', 'log_amount_paid', 'log_amount_received', 'amount_vs_sender_mean', 'is_large_amount', 'amount_robust_zscore', 'txn_count_1h', 'txn_count_6h', 'txn_count_24h', 'amount_sent_1h', 'amount_sent_24h', 'fan_out_24h', 'fan_in_24h', 'consecutive_cross_bank_count', 'fan_out_ratio', 'fan_in_ratio', 'account_degree_ratio', 'gather_scatter_score', 'entity_net_flow_ratio', 'sender_lifetime_txn_count', 'sender_lifetime_total_sent_log', 'sender_avg_amount', 'sender_unique_receivers_all', 'receiver_lifetime_txn_count', 'receiver_lifetime_total_received_log', 'receiver_avg_received', 'receiver_unique_senders_all', 'hour_of_day', 'minute_of_hour', 'day_of_month', 'day_of_week', 'is_night', 'is_weekend', 'days_since_account_first_txn', 'days_since_own_last_activity', 'night_activity_ratio', 'weekend_activity_ratio', 'sender_daily_txn_rate', 'payment_format_encoded', 'is_ach_payment', 'is_cross_currency', 'payment_currency_encoded', 'receiving_currency_encoded', 'is_cross_bank', 'round_amount_flag', 'amount_ratio', 'amount_difference', 'is_self_transfer', 'is_bitcoin_transaction', 'is_cash_payment', 'currency_pair_rarity', 'time_since_last_received', 'sender_receiver_pair_txn_count', 'receiver_txn_count_1h', 'receiver_txn_count_24h', 'amount_received_1h', 'amount_received_24h', 'receiver_velocity_ratio', 'sender_amount_std', 'sender_amount_cv', 'amount_vs_receiver_mean', 'receiver_amount_std', 'sender_interval_std_seconds', 'sender_interval_cv', 'sender_median_interval_hours']
+2026-09-17 12:22:19,502 | INFO     | Chronological split -> fit=22,966,731 rows (fraud=21,864) | val=2,551,859 rows (fraud=2,726) | OOT=6,379,648 rows (fraud=10,640)
+2026-09-17 12:22:19,502 | INFO     | fit window: 2022-09-01 00:00:00+00:00 -> 2022-09-12 22:33:00+00:00 | val window: 2022-09-12 22:33:00+00:00 -> 2022-09-14 05:46:00+00:00 | OOT window: 2022-09-14 05:46:00+00:00 -> 2022-09-28 15:58:00+00:00
+2026-09-17 12:22:20,630 | INFO     | scale_pos_weight (raw ratio) = count(legit)/count(fraud) = 25,494,000/24,590 = 1036.76
+2026-09-17 12:22:20,631 | INFO     | ========================================================================================
+2026-09-17 12:22:20,631 | INFO     | HYPERPARAMETER TUNING — 25 trials, 5-fold time-series CV
+2026-09-17 12:22:20,631 | INFO     | ========================================================================================
+2026-09-17 12:22:20,632 | WARNING  | CACHED TUNING RESULT FOUND at ml\reports\LightGBM\optuna_best_params.json — REUSING IT instead of re-tuning. Proceeding with cached params.
+2026-09-17 12:22:20,632 | INFO     | Cached best PR-AUC (CV): 0.5693
+2026-09-17 12:22:20,633 | INFO     | Training on 22,966,731 fit rows | scale_pos_weight=70.69 (1036.76 raw x 0.0682 tuned) | ceiling=6000 rounds, early_stopping patience=150 | threads=4
+2026-09-17 12:22:20,634 | INFO     | [mem check: before final training] RAM used=47.4% (32.4GB / 68.3GB)
+2026-09-17 12:28:35,704 | INFO     | [Checkpoint] Saved Booster at round  200 -> checkpoint_round_0200.txt
+2026-09-17 12:34:21,927 | INFO     | [Checkpoint] Saved Booster at round  400 -> checkpoint_round_0400.txt
+2026-09-17 12:39:58,174 | INFO     | [Checkpoint] Saved Booster at round  600 -> checkpoint_round_0600.txt
+2026-09-17 12:45:33,761 | INFO     | [Checkpoint] Saved Booster at round  800 -> checkpoint_round_0800.txt
+2026-09-17 12:51:05,047 | INFO     | [Checkpoint] Saved Booster at round 1000 -> checkpoint_round_1000.txt
+2026-09-17 12:56:34,349 | INFO     | [Checkpoint] Saved Booster at round 1200 -> checkpoint_round_1200.txt
+2026-09-17 13:02:05,347 | INFO     | [Checkpoint] Saved Booster at round 1400 -> checkpoint_round_1400.txt
+2026-09-17 13:07:38,977 | INFO     | [Checkpoint] Saved Booster at round 1600 -> checkpoint_round_1600.txt
+2026-09-17 13:13:13,745 | INFO     | [Checkpoint] Saved Booster at round 1800 -> checkpoint_round_1800.txt
+2026-09-17 13:18:23,621 | INFO     | [Checkpoint] Saved Booster at round 2000 -> checkpoint_round_2000.txt
+2026-09-17 13:23:06,667 | INFO     | [Checkpoint] Saved Booster at round 2200 -> checkpoint_round_2200.txt
+2026-09-17 13:28:38,125 | INFO     | [Checkpoint] Saved Booster at round 2400 -> checkpoint_round_2400.txt
+2026-09-17 13:33:08,082 | INFO     | [Checkpoint] Saved Booster at round 2600 -> checkpoint_round_2600.txt
+2026-09-17 13:37:11,344 | INFO     | [Checkpoint] Saved Booster at round 2800 -> checkpoint_round_2800.txt
+2026-09-17 13:41:12,824 | INFO     | [Checkpoint] Saved Booster at round 3000 -> checkpoint_round_3000.txt
+2026-09-17 13:45:10,503 | INFO     | [Checkpoint] Saved Booster at round 3200 -> checkpoint_round_3200.txt
+2026-09-17 13:49:10,349 | INFO     | [Checkpoint] Saved Booster at round 3400 -> checkpoint_round_3400.txt
+2026-09-17 13:53:35,626 | INFO     | [Checkpoint] Saved Booster at round 3600 -> checkpoint_round_3600.txt
+2026-09-17 13:58:48,736 | INFO     | [Checkpoint] Saved Booster at round 3800 -> checkpoint_round_3800.txt
+2026-09-17 14:04:29,469 | INFO     | [Checkpoint] Saved Booster at round 4000 -> checkpoint_round_4000.txt
+2026-09-17 14:10:09,193 | INFO     | [Checkpoint] Saved Booster at round 4200 -> checkpoint_round_4200.txt
+2026-09-17 14:15:49,115 | INFO     | [Checkpoint] Saved Booster at round 4400 -> checkpoint_round_4400.txt
+2026-09-17 14:21:33,638 | INFO     | [Checkpoint] Saved Booster at round 4600 -> checkpoint_round_4600.txt
+2026-09-17 14:27:17,025 | INFO     | [Checkpoint] Saved Booster at round 4800 -> checkpoint_round_4800.txt
+2026-09-17 14:33:03,178 | INFO     | [Checkpoint] Saved Booster at round 5000 -> checkpoint_round_5000.txt
+2026-09-17 14:38:35,696 | INFO     | [Checkpoint] Saved Booster at round 5200 -> checkpoint_round_5200.txt
+2026-09-17 14:44:17,370 | INFO     | [Checkpoint] Saved Booster at round 5400 -> checkpoint_round_5400.txt
+2026-09-17 14:49:45,754 | INFO     | [Checkpoint] Saved Booster at round 5600 -> checkpoint_round_5600.txt
+2026-09-17 14:55:14,729 | INFO     | [Checkpoint] Saved Booster at round 5800 -> checkpoint_round_5800.txt
+2026-09-17 15:00:06,633 | INFO     | [Checkpoint] Saved Booster at round 6000 -> checkpoint_round_6000.txt
+2026-09-17 15:00:07,591 | INFO     | [mem check: after final training] RAM used=35.4% (24.2GB / 68.3GB)
+2026-09-17 15:00:07,591 | INFO     | Converged via genuine early stopping at best_iteration=5990 (well under the 6000-round ceiling)
+2026-09-17 15:00:07,681 | INFO     | ========================================================================================
+2026-09-17 15:00:07,681 | INFO     | EVALUATION — Out-of-Time Test Set (touched here for the first time)
+2026-09-17 15:00:07,681 | INFO     | ========================================================================================
+2026-09-17 15:28:48,162 | INFO     | PR-AUC  (Primary Metric): 0.6754
+2026-09-17 15:28:48,162 | INFO     | ROC-AUC                 : 0.9904
+2026-09-17 15:28:48,878 | INFO     | Confusion Matrix @0.5 threshold (reference only — not the production operating point, see Top-K capacity metrics below):
+[[6352031   16977]
+ [   2635    8005]]
+2026-09-17 15:29:02,923 | INFO     | 
+              precision    recall  f1-score   support
+
+           0     0.9996    0.9973    0.9985   6369008
+           1     0.3204    0.7523    0.4494     10640
+
+    accuracy                         0.9969   6379648
+   macro avg     0.6600    0.8748    0.7239   6379648
+weighted avg     0.9985    0.9969    0.9975   6379648
+
+2026-09-17 15:29:02,923 | INFO     | Minority-class F1 @0.5 threshold : 44.9441%  (paper GFP+LightGBM HI-Large baseline: 48.67%)
+2026-09-17 15:29:02,923 | INFO     | Minority-class Precision @0.5    : 32.0431%
+2026-09-17 15:29:02,923 | INFO     | Minority-class Recall @0.5       : 75.2350%
+2026-09-17 15:29:03,802 | INFO     | [Alert Capacity Top 1%] Flagged=63,797 | Recall=85.5357% | Precision=14.2656% | TP=9101 | FP=54696
+2026-09-17 15:29:04,789 | INFO     | [Alert Capacity Top 5%] Flagged=318,983 | Recall=92.0865% | Precision=3.0716% | TP=9798 | FP=309185
+2026-09-17 15:29:06,290 | INFO     | Recall >= 80% MANDATE MET at score threshold=0.0000 (Recall=100.0000%, Precision=0.1668%)
+2026-09-17 15:29:07,318 | INFO     | Saved PR curve plot -> ml\reports\LightGBM\pr_curve.png
+2026-09-17 15:29:07,325 | INFO     | ========================================================================================
+2026-09-17 15:29:07,325 | INFO     | EXPLAINABILITY — SHAP feature attribution, all features
+2026-09-17 15:29:07,325 | INFO     | ========================================================================================
+2026-09-17 15:44:51,964 | INFO     | Saved FULL feature-importance bar plot (66 features) -> ml\reports\LightGBM\shap_summary_bar_full.png
+2026-09-17 15:45:13,900 | INFO     | Saved SHAP beeswarm plot -> ml\reports\LightGBM\shap_summary_dot.png
+2026-09-17 15:45:13,925 | INFO     | FULL feature importance ranking, all 66 features:
+ rank                              feature  mean_abs_shap
+    1       sender_receiver_pair_txn_count       1.688441
+    2               payment_format_encoded       0.531813
+    3                    sender_avg_amount       0.480484
+    4         days_since_own_last_activity       0.371539
+    5                       is_ach_payment       0.357651
+    6         consecutive_cross_bank_count       0.306341
+    7                          amount_paid       0.303171
+    8                 currency_pair_rarity       0.299575
+    9                 gather_scatter_score       0.279972
+   10                    sender_amount_std       0.262530
+   11                     sender_amount_cv       0.245781
+   12                   amount_received_1h       0.227870
+   13                          hour_of_day       0.223422
+   14          sender_unique_receivers_all       0.222403
+   15                          fan_out_24h       0.221705
+   16                  receiver_amount_std       0.219936
+   17         days_since_account_first_txn       0.219145
+   18          receiver_unique_senders_all       0.213419
+   19                         day_of_month       0.200811
+   20             time_since_last_received       0.191073
+   21                   sender_interval_cv       0.178642
+   22          receiver_lifetime_txn_count       0.175277
+   23         sender_median_interval_hours       0.174883
+   24                         txn_count_1h       0.174508
+   25                       minute_of_hour       0.161544
+   26                receiver_avg_received       0.160678
+   27                entity_net_flow_ratio       0.160258
+   28                 amount_robust_zscore       0.146861
+   29                      amount_received       0.145116
+   30                  log_amount_received       0.138367
+   31       sender_lifetime_total_sent_log       0.133842
+   32                  amount_received_24h       0.128743
+   33                      log_amount_paid       0.124552
+   34                 night_activity_ratio       0.122418
+   35              receiver_velocity_ratio       0.110345
+   36              amount_vs_receiver_mean       0.109119
+   37                amount_vs_sender_mean       0.109053
+   38           receiving_currency_encoded       0.108613
+   39               weekend_activity_ratio       0.107200
+   40 receiver_lifetime_total_received_log       0.102181
+   41                         fan_in_ratio       0.098268
+   42                       amount_sent_1h       0.097994
+   43                     is_self_transfer       0.095527
+   44                sender_daily_txn_rate       0.091961
+   45          sender_interval_std_seconds       0.091540
+   46            sender_lifetime_txn_count       0.088015
+   47                        is_cross_bank       0.068867
+   48                         txn_count_6h       0.068148
+   49               receiver_txn_count_24h       0.066922
+   50             payment_currency_encoded       0.064499
+   51                        fan_out_ratio       0.060769
+   52                      amount_sent_24h       0.058649
+   53                    is_cross_currency       0.054271
+   54                      is_cash_payment       0.052783
+   55                        txn_count_24h       0.051615
+   56                 account_degree_ratio       0.047437
+   57                receiver_txn_count_1h       0.035899
+   58                    amount_difference       0.028386
+   59                           fan_in_24h       0.027649
+   60                          day_of_week       0.024756
+   61               is_bitcoin_transaction       0.024637
+   62                             is_night       0.019274
+   63                           is_weekend       0.002553
+   64                      is_large_amount       0.001267
+   65                         amount_ratio       0.000381
+   66                    round_amount_flag       0.000000
+2026-09-17 15:45:14,662 | INFO     | Model artifact serialized -> ml\models\LightGBM\lgbm_best_final.pkl
+2026-09-17 15:45:14,670 | INFO     | Executive summary written -> ml\reports\LightGBM\executive_summary.md
+2026-09-17 15:45:14,671 | INFO     | ========================================================================================
+2026-09-17 15:45:14,671 | INFO     | PIPELINE COMPLETE
+2026-09-17 15:45:14,671 | INFO     | ========================================================================================
+2026-09-17 15:45:14,672 | INFO     | PR-AUC: 0.6754 | ROC-AUC: 0.9904
+2026-09-17 15:45:14,672 | INFO     | Top 1% capacity -> Recall=85.5357%, Precision=14.2656%
+2026-09-17 15:45:14,673 | INFO     | Top 5% capacity -> Recall=92.0865%, Precision=3.0716%
+2026-09-17 15:45:14,673 | INFO     | Mandate met: True
+2026-09-17 15:45:14,673 | INFO     | Model saved to: ml\models\LightGBM\lgbm_best_final.pkl
+2026-09-17 15:45:14,673 | INFO     | Executive summary: ml\reports\LightGBM\executive_summary.md
+2026-09-17 15:45:14,674 | INFO     | Full feature importance: ml\reports\LightGBM\shap_feature_importance_full.csv

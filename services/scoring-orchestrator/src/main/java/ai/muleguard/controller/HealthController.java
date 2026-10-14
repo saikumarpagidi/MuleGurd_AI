@@ -1,41 +1,52 @@
 package ai.muleguard.controller;
 
-import org.springframework.beans.factory.annotation.Value;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Health endpoint for the Scoring Orchestrator.
- *
- * Returns the operational status of this service.
- * Used by Docker Compose health checks, Kubernetes liveness probes,
- * and the integration test suite.
- *
- * When the full scoring pipeline is active, this endpoint will additionally
- * report the circuit breaker state for each downstream model service.
+ * Custom health endpoint to expose detailed circuit breaker state.
+ * 
+ * While Actuator provides /actuator/health, this custom endpoint
+ * formats the health check specifically for k8s liveness/readiness probes,
+ * allowing DevOps to immediately see if the orchestrator is running in
+ * degraded mode due to a downstream failure.
  */
 @RestController
-@RequestMapping("/api/v1")
 public class HealthController {
 
-    @Value("${muleguard.service.name:scoring-orchestrator}")
-    private String serviceName;
+    private final CircuitBreakerRegistry circuitBreakerRegistry;
 
-    /**
-     * Returns service health status.
-     *
-     * @return Reactive map containing status and service name.
-     */
-    @GetMapping("/health")
-    public Mono<Map<String, Object>> health() {
-        Map<String, Object> response = new LinkedHashMap<>();
+    public HealthController(CircuitBreakerRegistry circuitBreakerRegistry) {
+        this.circuitBreakerRegistry = circuitBreakerRegistry;
+    }
+
+    @GetMapping({"/health", "/api/v1/health"})
+    public Mono<ResponseEntity<Map<String, Object>>> getHealth() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("service", "scoring-orchestrator");
         response.put("status", "ok");
-        response.put("service", serviceName);
-        return Mono.just(response);
+        
+        Map<String, String> cbStates = new HashMap<>();
+        boolean anyDegraded = false;
+        
+        for (CircuitBreaker cb : circuitBreakerRegistry.getAllCircuitBreakers()) {
+            String state = cb.getState().name();
+            cbStates.put(cb.getName(), state);
+            if (!"CLOSED".equals(state)) {
+                anyDegraded = true;
+            }
+        }
+        
+        response.put("circuitBreakers", cbStates);
+        response.put("degradedMode", anyDegraded);
+        
+        return Mono.just(ResponseEntity.ok(response));
     }
 }

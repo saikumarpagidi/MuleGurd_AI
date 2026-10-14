@@ -1,0 +1,60 @@
+{
+  "label": "primary",
+  "n_total": 6379648,
+  "n_fraud": 10642,
+  "prevalence": 0.0016681171124174876,
+  "roc_auc": 0.9872338664851585,
+  "pr_auc": 0.5123914078754801,
+  "alert_budgets": [
+    {
+      "alert_pct": 0.1,
+      "flagged_volume": 6380,
+      "caught": 4309,
+      "total_fraud": 10642,
+      "recall": 0.4049050930276264,
+      "precision": 0.6753918495297806,
+      "lift": 404.8827534362869
+    },
+    {
+      "alert_pct": 0.5,
+      "flagged_volume": 31899,
+      "caught": 7242,
+      "total_fraud": 10642,
+      "recall": 0.6805111821086262,
+      "precision": 0.2270290604721151,
+      "lift": 136.09899375895586
+    },
+    {
+      "alert_pct": 1.0,
+      "flagged_volume": 63797,
+      "caught": 8349,
+      "total_fraud": 10642,
+      "recall": 0.7845329825220824,
+      "precision": 0.130868222643698,
+      "lift": 78.4526587908685
+    },
+    {
+      "alert_pct": 5.0,
+      "flagged_volume": 318983,
+      "caught": 9694,
+      "total_fraud": 10642,
+      "recall": 0.9109190001879346,
+      "precision": 0.03039033428113724,
+      "lift": 18.218345735387015
+    }
+  ],
+  "threshold_config": {
+    "p95": 0.15260027649428606,
+    "p97": 0.16217520781184772,
+    "p99": 0.2946434529524377,
+    "p99_5": 0.35666934544493173,
+    "calibrated_on": "validation split only, never test"
+  },
+  "calibrated_p99": {
+    "flagged": 74491,
+    "caught": 8568,
+    "recall": 0.805111821086262
+  },
+  "checkpoint_reported_val_auc_best": 0.984903682477314,
+  "role_accuracy_heuristic": 0.1708
+}

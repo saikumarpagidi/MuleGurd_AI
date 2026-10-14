@@ -1,0 +1,67 @@
+2026-09-17 17:18:19,312 | INFO     | ========================================================================================
+2026-09-17 17:18:19,312 | INFO     | MuleGuard.AI — Autoencoder v6 Evaluation Suite (Isolated Staging)
+2026-09-17 17:18:19,312 | INFO     | ========================================================================================
+2026-09-17 17:18:19,312 | INFO     | [mem:startup] RAM 31.1%  (21.3/68.3 GB)
+2026-09-17 17:18:19,359 | INFO     | Resource guardrail: torch.set_num_threads(30)
+2026-09-17 17:18:19,359 | INFO     | Loading from v6 staging paths: C:\Users\INP\Documents\MuleGurd_AI\ml\models\Autoencoder / C:\Users\INP\Documents\MuleGurd_AI\ml\data\processed\autoencoder_cache
+2026-09-17 17:18:19,360 | INFO     | Production model (ml/models/autoencoder/) is NEVER touched by this script.
+2026-09-17 17:18:19,360 | INFO     | Loading final checkpoint: C:\Users\INP\Documents\MuleGurd_AI\ml\models\Autoencoder\autoencoder_final.pt ...
+2026-09-17 17:18:19,374 | INFO     |   Architecture: 21→128→64→12→64→128→21
+2026-09-17 17:18:19,392 | INFO     |   Per-feature error normalization loaded (normalized score is primary metric).
+2026-09-17 17:18:19,411 | INFO     | Loaded OOT test set: 6,379,648 rows (10,640 fraud, prevalence=0.1668%)
+2026-09-17 17:18:19,411 | INFO     | [mem:after cache load] RAM 31.2%  (21.3/68.3 GB)
+2026-09-17 17:18:19,412 | INFO     | ========================================================================================
+2026-09-17 17:18:19,412 | INFO     | Cold-Start Guard Analysis
+2026-09-17 17:18:19,412 | INFO     | ========================================================================================
+2026-09-17 17:18:19,582 | INFO     | Cold-start rows: 883,412 (13.85%) → scored 0.0 (suppressed)
+2026-09-17 17:18:19,583 | INFO     | Cold-start fraud rows: 3,838
+2026-09-17 17:18:19,583 | INFO     | ========================================================================================
+2026-09-17 17:18:19,583 | INFO     | Scoring OOT test set (real model inference)
+2026-09-17 17:18:19,584 | INFO     | ========================================================================================
+2026-09-17 17:18:24,371 | INFO     | [Raw unweighted MSE — comparison only] ROC-AUC=0.6989 | PR-AUC=0.009833
+2026-09-17 17:18:28,227 | INFO     | Using per-feature validation-normalized score as PRIMARY metric.
+2026-09-17 17:18:28,228 | INFO     | [mem:after scoring] RAM 32.2%  (22.0/68.3 GB)
+2026-09-17 17:18:30,735 | INFO     | OOT ROC-AUC: 0.6717
+2026-09-17 17:18:30,735 | INFO     | OOT PR-AUC:  0.008543  (random baseline 0.001668, lift 5.1x)
+2026-09-17 17:18:30,735 | INFO     | ========================================================================================
+2026-09-17 17:18:30,735 | INFO     | Alert-Capacity Metrics
+2026-09-17 17:18:30,735 | INFO     | ========================================================================================
+2026-09-17 17:18:30,861 | INFO     | [Top 0.1%] Flagged=6,380 | Recall=3.37% | Precision=5.63% | Lift=33.7x
+2026-09-17 17:18:30,861 | INFO     | [Top 0.5%] Flagged=31,899 | Recall=9.45% | Precision=3.15% | Lift=18.9x
+2026-09-17 17:18:30,861 | INFO     | [Top 1.0%] Flagged=63,797 | Recall=14.23% | Precision=2.37% | Lift=14.2x
+2026-09-17 17:18:30,862 | INFO     | [Top 5.0%] Flagged=318,983 | Recall=19.83% | Precision=0.66% | Lift=4.0x
+2026-09-17 17:18:30,867 | INFO     | [Calibrated p99.9 threshold=3.758836] Flagged=29,657 | Caught=942 | Recall=8.85%
+2026-09-17 17:18:30,867 | INFO     | ========================================================================================
+2026-09-17 17:18:30,867 | INFO     | Feature Attribution (per-feature reconstruction error ranking)
+2026-09-17 17:18:30,867 | INFO     | ========================================================================================
+2026-09-17 17:18:30,978 | INFO     |    1. fan_in_24h                             1.713061
+2026-09-17 17:18:30,978 | INFO     |    2. amount_received_1h                     0.365645
+2026-09-17 17:18:30,978 | INFO     |    3. time_since_last_received               0.104117
+2026-09-17 17:18:30,979 | INFO     |    4. amount_ratio                           0.035870
+2026-09-17 17:18:30,979 | INFO     |    5. receiver_txn_count_1h                  0.016112
+2026-09-17 17:18:30,979 | INFO     |    6. txn_count_1h                           0.007855
+2026-09-17 17:18:30,979 | INFO     |    7. account_degree_ratio                   0.007442
+2026-09-17 17:18:30,979 | INFO     |    8. fan_out_24h                            0.006650
+2026-09-17 17:18:30,979 | INFO     |    9. amount_sent_1h                         0.006570
+2026-09-17 17:18:30,979 | INFO     |   10. hour_of_day_norm                       0.006335
+2026-09-17 17:18:30,980 | INFO     |   11. txn_count_24h                          0.004182
+2026-09-17 17:18:30,980 | INFO     |   12. payment_format_risk_score              0.004041
+2026-09-17 17:18:30,980 | INFO     |   13. day_of_week_norm                       0.004020
+2026-09-17 17:18:30,980 | INFO     |   14. log_amount_paid                        0.003096
+2026-09-17 17:18:30,980 | INFO     |   15. log_amount_received                    0.003080
+2026-09-17 17:18:30,980 | INFO     |   16. is_cross_bank                          0.002134
+2026-09-17 17:18:30,980 | INFO     |   17. is_night                               0.001671
+2026-09-17 17:18:30,980 | INFO     |   18. amount_vs_sender_mean                  0.001253
+2026-09-17 17:18:30,981 | INFO     |   19. is_weekend                             0.001229
+2026-09-17 17:18:30,981 | INFO     |   20. is_large_amount                        0.000983
+2026-09-17 17:18:30,981 | INFO     |   21. amount_vs_receiver_mean                0.000031
+2026-09-17 17:18:31,459 | INFO     | Saved PR curve           -> C:\Users\INP\Documents\MuleGurd_AI\ml\reports\Autoencoder\pr_curve.png
+2026-09-17 17:18:31,459 | INFO     | Saved feature attribution -> C:\Users\INP\Documents\MuleGurd_AI\ml\reports\Autoencoder\feature_attribution.png
+2026-09-17 17:18:31,460 | INFO     | Wrote C:\Users\INP\Documents\MuleGurd_AI\ml\reports\Autoencoder\evaluation_metrics.json
+2026-09-17 17:18:31,460 | INFO     | Wrote C:\Users\INP\Documents\MuleGurd_AI\ml\reports\Autoencoder\executive_summary.md
+2026-09-17 17:18:31,460 | INFO     | ========================================================================================
+2026-09-17 17:18:31,460 | INFO     | EVALUATION COMPLETE — v6
+2026-09-17 17:18:31,460 | INFO     | ========================================================================================
+2026-09-17 17:18:31,460 | INFO     | ROC-AUC: 0.6717 | PR-AUC: 0.008543
+2026-09-17 17:18:31,460 | INFO     | All outputs in: C:\Users\INP\Documents\MuleGurd_AI\ml\reports\Autoencoder
+2026-09-17 17:18:31,461 | INFO     | Next step: review reports, then run train_lgbm_aml.py for Phase-2 LGBM integration.

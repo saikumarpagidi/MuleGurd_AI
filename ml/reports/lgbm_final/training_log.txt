@@ -1,0 +1,130 @@
+2026-09-16 15:03:00,481 | INFO     | ========================================================================================
+2026-09-16 15:03:00,481 | INFO     | MuleGuard.AI — Enterprise Training Pipeline (Single-Model, Final)
+2026-09-16 15:03:00,482 | INFO     | ========================================================================================
+2026-09-16 15:03:00,482 | INFO     | Resource guardrails: n_jobs=4 (of 32 logical cores), tuning_sample_rows=2,000,000, max_num_leaves=128, final_round_ceiling=6000, early_stopping_patience=150
+2026-09-16 15:03:00,482 | INFO     | [mem check: startup] RAM used=28.7% (19.6GB / 68.3GB)
+2026-09-16 15:03:00,491 | INFO     | Loading engineered features from: ml\data\processed\features_lgbm_final.parquet (68 columns)
+2026-09-16 15:03:05,089 | INFO     | Sorting chronologically (required for a valid OOT split)...
+2026-09-16 15:04:43,900 | INFO     | Loaded 31,898,238 rows x 66 features in 103.4s (feature matrix: 8.42 GB)
+2026-09-16 15:04:43,901 | INFO     | [mem check: after load+prepare] RAM used=63.0% (43.1GB / 68.3GB)
+2026-09-16 15:04:43,938 | INFO     | Fraud rate: 0.1104% (35,230 fraud / 31,898,238 total)
+2026-09-16 15:04:43,938 | INFO     | Feature set (66 columns): ['amount_paid', 'amount_received', 'log_amount_paid', 'log_amount_received', 'amount_vs_sender_mean', 'is_large_amount', 'amount_robust_zscore', 'txn_count_1h', 'txn_count_6h', 'txn_count_24h', 'amount_sent_1h', 'amount_sent_24h', 'fan_out_24h', 'fan_in_24h', 'consecutive_cross_bank_count', 'fan_out_ratio', 'fan_in_ratio', 'account_degree_ratio', 'gather_scatter_score', 'entity_net_flow_ratio', 'sender_lifetime_txn_count', 'sender_lifetime_total_sent_log', 'sender_avg_amount', 'sender_unique_receivers_all', 'receiver_lifetime_txn_count', 'receiver_lifetime_total_received_log', 'receiver_avg_received', 'receiver_unique_senders_all', 'hour_of_day', 'minute_of_hour', 'day_of_month', 'day_of_week', 'is_night', 'is_weekend', 'days_since_account_first_txn', 'days_since_own_last_activity', 'night_activity_ratio', 'weekend_activity_ratio', 'sender_daily_txn_rate', 'payment_format_encoded', 'is_ach_payment', 'is_cross_currency', 'payment_currency_encoded', 'receiving_currency_encoded', 'is_cross_bank', 'round_amount_flag', 'amount_ratio', 'amount_difference', 'is_self_transfer', 'is_bitcoin_transaction', 'is_cash_payment', 'currency_pair_rarity', 'time_since_last_received', 'sender_receiver_pair_txn_count', 'receiver_txn_count_1h', 'receiver_txn_count_24h', 'amount_received_1h', 'amount_received_24h', 'receiver_velocity_ratio', 'sender_amount_std', 'sender_amount_cv', 'amount_vs_receiver_mean', 'receiver_amount_std', 'sender_interval_std_seconds', 'sender_interval_cv', 'sender_median_interval_hours']
+2026-09-16 15:04:43,952 | INFO     | Chronological split -> fit=22,966,731 rows (fraud=21,864) | val=2,551,859 rows (fraud=2,726) | OOT=6,379,648 rows (fraud=10,640)
+2026-09-16 15:04:43,959 | INFO     | fit window: 2022-09-01 00:00:00+00:00 -> 2022-09-12 22:33:00+00:00 | val window: 2022-09-12 22:33:00+00:00 -> 2022-09-14 05:46:00+00:00 | OOT window: 2022-09-14 05:46:00+00:00 -> 2022-09-28 15:58:00+00:00
+2026-09-16 15:04:45,067 | INFO     | scale_pos_weight (raw ratio) = count(legit)/count(fraud) = 25,494,000/24,590 = 1036.76
+2026-09-16 15:04:45,068 | INFO     | ========================================================================================
+2026-09-16 15:04:45,068 | INFO     | HYPERPARAMETER TUNING — 25 trials, 5-fold time-series CV
+2026-09-16 15:04:45,069 | INFO     | ========================================================================================
+2026-09-16 15:04:45,070 | WARNING  | CACHED TUNING RESULT FOUND at ml\reports\lgbm_final\optuna_best_params.json — REUSING IT instead of re-tuning. If you have regenerated features_lgbm.parquet since this cache was created (e.g. after fixing feature leakage), DELETE THIS FILE and rerun so tuning reflects the CURRENT data. Proceeding with cached params.
+2026-09-16 15:04:45,080 | INFO     | Cached best PR-AUC (CV): 0.5463
+2026-09-16 15:04:45,080 | INFO     | Training on 22,966,731 fit rows | scale_pos_weight=500.51 (1036.76 raw x 0.4828 tuned) | ceiling=6000 rounds, early_stopping patience=150
+2026-09-16 15:04:45,081 | INFO     | [mem check: before final training] RAM used=56.6% (38.7GB / 68.3GB)
+2026-09-16 17:44:06,344 | INFO     | [mem check: after final training] RAM used=35.2% (24.0GB / 68.3GB)
+2026-09-16 17:44:06,344 | INFO     | Converged via genuine early stopping at best_iteration=5316 (well under the 6000-round ceiling)
+2026-09-16 17:44:06,536 | INFO     | ========================================================================================
+2026-09-16 17:44:06,536 | INFO     | EVALUATION — Out-of-Time Test Set (touched here for the first time)
+2026-09-16 17:44:06,536 | INFO     | ========================================================================================
+2026-09-16 17:50:57,644 | INFO     | PR-AUC  (Primary Metric): 0.5559
+2026-09-16 17:50:57,644 | INFO     | ROC-AUC                 : 0.9892
+2026-09-16 17:50:58,303 | INFO     | Confusion Matrix @0.5 threshold (reference only — not the production operating point, see Top-K capacity metrics below):
+[[6337497   31511]
+ [   2250    8390]]
+2026-09-16 17:51:04,975 | INFO     | 
+              precision    recall  f1-score   support
+
+           0     0.9996    0.9951    0.9973   6369008
+           1     0.2103    0.7885    0.3320     10640
+
+    accuracy                         0.9947   6379648
+   macro avg     0.6050    0.8918    0.6647   6379648
+weighted avg     0.9983    0.9947    0.9962   6379648
+
+2026-09-16 17:51:05,953 | INFO     | [Alert Capacity Top 1%] Flagged=63,797 | Recall=83.7876% | Precision=13.9740% | TP=8915 | FP=54882
+2026-09-16 17:51:06,912 | INFO     | [Alert Capacity Top 5%] Flagged=318,983 | Recall=92.0113% | Precision=3.0691% | TP=9790 | FP=309193
+2026-09-16 17:51:08,378 | INFO     | Recall >= 80% MANDATE MET at score threshold=0.4022 (Recall=80.0000%, Precision=18.8904%)
+2026-09-16 17:51:09,372 | INFO     | Saved PR curve plot -> ml\reports\lgbm_final\pr_curve.png
+2026-09-16 17:51:09,383 | INFO     | ========================================================================================
+2026-09-16 17:51:09,383 | INFO     | EXPLAINABILITY — SHAP feature attribution, all features
+2026-09-16 17:51:09,383 | INFO     | ========================================================================================
+2026-09-16 18:00:12,851 | INFO     | Saved FULL feature-importance bar plot (66 features) -> ml\reports\lgbm_final\shap_summary_bar_full.png
+2026-09-16 18:00:32,949 | INFO     | Saved SHAP beeswarm plot -> ml\reports\lgbm_final\shap_summary_dot.png
+2026-09-16 18:00:32,980 | INFO     | FULL feature importance ranking, all 66 features:
+ rank                              feature  mean_abs_shap
+    1       sender_receiver_pair_txn_count       3.080546
+    2         days_since_account_first_txn       1.554023
+    3                         txn_count_1h       0.873339
+    4                 currency_pair_rarity       0.551288
+    5         days_since_own_last_activity       0.549402
+    6                          amount_paid       0.520309
+    7               payment_format_encoded       0.514253
+    8                   sender_interval_cv       0.513200
+    9                 gather_scatter_score       0.490967
+   10                         day_of_month       0.478517
+   11                       is_ach_payment       0.431841
+   12             time_since_last_received       0.383937
+   13                          hour_of_day       0.358973
+   14                   amount_received_1h       0.350587
+   15                 night_activity_ratio       0.344173
+   16       sender_lifetime_total_sent_log       0.341156
+   17                    sender_avg_amount       0.316445
+   18          receiver_lifetime_txn_count       0.310590
+   19                 amount_robust_zscore       0.302711
+   20                  receiver_amount_std       0.284225
+   21                receiver_avg_received       0.280224
+   22               weekend_activity_ratio       0.274262
+   23                       minute_of_hour       0.262287
+   24          sender_interval_std_seconds       0.246596
+   25              receiver_velocity_ratio       0.244283
+   26                    sender_amount_std       0.233261
+   27                      log_amount_paid       0.212982
+   28                     sender_amount_cv       0.208253
+   29         consecutive_cross_bank_count       0.205768
+   30 receiver_lifetime_total_received_log       0.193304
+   31                  amount_received_24h       0.186305
+   32         sender_median_interval_hours       0.174818
+   33                entity_net_flow_ratio       0.169218
+   34              amount_vs_receiver_mean       0.162549
+   35                         fan_in_ratio       0.160594
+   36                  log_amount_received       0.152185
+   37                       amount_sent_1h       0.143046
+   38                      amount_received       0.138118
+   39                      is_cash_payment       0.130479
+   40          receiver_unique_senders_all       0.120812
+   41                        fan_out_ratio       0.113847
+   42                        txn_count_24h       0.111013
+   43            sender_lifetime_txn_count       0.103203
+   44                amount_vs_sender_mean       0.102975
+   45                     is_self_transfer       0.101595
+   46             payment_currency_encoded       0.100324
+   47                sender_daily_txn_rate       0.099914
+   48                      amount_sent_24h       0.099278
+   49          sender_unique_receivers_all       0.096941
+   50                receiver_txn_count_1h       0.090062
+   51           receiving_currency_encoded       0.086249
+   52                 account_degree_ratio       0.077844
+   53               receiver_txn_count_24h       0.070061
+   54                        is_cross_bank       0.068615
+   55                    amount_difference       0.062572
+   56                         txn_count_6h       0.056769
+   57                    is_cross_currency       0.045391
+   58                          day_of_week       0.035388
+   59               is_bitcoin_transaction       0.032427
+   60                          fan_out_24h       0.027616
+   61                           fan_in_24h       0.015123
+   62                             is_night       0.012986
+   63                      is_large_amount       0.009234
+   64                           is_weekend       0.005554
+   65                         amount_ratio       0.000000
+   66                    round_amount_flag       0.000000
+2026-09-16 18:00:33,465 | INFO     | Model artifact serialized -> ml\models\lgbm_best_final.pkl
+2026-09-16 18:00:33,474 | INFO     | Executive summary written -> ml\reports\lgbm_final\executive_summary.md
+2026-09-16 18:00:33,475 | INFO     | ========================================================================================
+2026-09-16 18:00:33,475 | INFO     | PIPELINE COMPLETE
+2026-09-16 18:00:33,475 | INFO     | ========================================================================================
+2026-09-16 18:00:33,477 | INFO     | PR-AUC: 0.5559 | ROC-AUC: 0.9892
+2026-09-16 18:00:33,478 | INFO     | Top 1% capacity -> Recall=83.7876%, Precision=13.9740%
+2026-09-16 18:00:33,478 | INFO     | Top 5% capacity -> Recall=92.0113%, Precision=3.0691%
+2026-09-16 18:00:33,479 | INFO     | Mandate met: True
+2026-09-16 18:00:33,479 | INFO     | Model saved to: ml\models\lgbm_best_final.pkl
+2026-09-16 18:00:33,480 | INFO     | Executive summary: ml\reports\lgbm_final\executive_summary.md
+2026-09-16 18:00:33,480 | INFO     | Full feature importance: ml\reports\lgbm_final\shap_feature_importance_full.csv

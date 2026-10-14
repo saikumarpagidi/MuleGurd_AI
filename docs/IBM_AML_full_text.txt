@@ -1,0 +1,1266 @@
+Total pages: 24
+
+===== PAGE 1 =====
+Realistic Synthetic Financial Transactions for
+Anti-Money Laundering Models
+ErikAltman1 JovanBlanuša2 LucvonNiederhäusern2
+BéniEgressy3∗ AndreeaAnghel2 KubilayAtasu2
+1IBMWatsonResearch,YorktownHeights,NY,USA
+2IBMResearchEurope,Zurich,Switzerland 3ETHZurich,Switzerland
+ealtman@us.ibm.com {jov, lvn}@zurich.ibm.com
+begressy@ethz.ch {aan, kat}@zurich.ibm.com
+Abstract
+Withthewidespreaddigitizationoffinanceandtheincreasingpopularityofcryp-
+tocurrencies, the sophistication of fraud schemes devised by cybercriminals is
+growing. Moneylaundering–themovementofillicitfundstoconcealtheirorigins
+–cancrossbankandnationalboundaries,producingcomplextransactionpatterns.
+TheUNestimates2-5%ofglobalGDPor$0.8-$2.0trilliondollarsarelaundered
+globallyeachyear. Unfortunately,realdatatotrainmachinelearningmodelsto
+detectlaunderingisgenerallynotavailable,andprevioussyntheticdatagenerators
+havehadsignificantshortcomings. Arealistic, standardized, publicly-available
+benchmarkisneededforcomparingmodelsandfortheadvancementofthearea.
+Tothisend,thispapercontributesasyntheticfinancialtransactiondatasetgenerator
+andasetofsyntheticallygeneratedAML(Anti-MoneyLaundering)datasets. We
+have calibrated this agent-based generator to match real transactions as closely
+as possible and made the datasets public. We describe the generator in detail
+anddemonstratehowthedatasetsgeneratedcanhelpcomparedifferentmachine
+learningmodelsintermsoftheirAMLabilities. Inakeyway,usingsyntheticdata
+inthesecomparisonscanbeevenbetterthanusingrealdata:thegroundtruthlabels
+arecomplete,whilstmanylaunderingtransactionsinrealdataareneverdetected.
+1 Introduction
+Moneylaunderingreferstothemovementofillicitfundstoconcealtheiroriginandmakethemappear
+tocomefromlegitimatesources. Launderingschemesoftencrossbankandnationalboundaries,
+producingcomplextransactionpatterns. Eventhoughtheamountoflaunderingisdifficulttoestimate
+precisely,theUNputstheglobalfigureatupto$2trillionperyear[6]asnotedintheabstract.
+Other,narrower,figureshelpillustratetheamountoflaundering. TheCEOofDanskeBankresigned
+in2019afteritwasrevealedthattheEstonianbranchalonemayhavelaundered$230billion[1].
+Finextraestimatesthatin2017theremayhavebeen$200billioninlaunderingsolelyinU.S.online
+sales [4]. Bank fines can be in the billions of dollars for failing to follow stringent standards on
+laundering [2]. As such, it is valuable to have high-quality data to help build models to detect
+laundering. Alas,forlegalandprivacyreasons,realdataisnotgenerallyavailable. Evenifrealdata
+wereavailable,itslabelingisinherentlypoor,asmostlaunderingoftengoesundetected[7,5].
+Syntheticfinancialdataisanemergingareatohelpaddressamultitudeofchallengeswithreal
+dataandthealgorithmsusedforanalysis. Thesechallengesincludeprivacyanddifferentialprivacy,
+competitiveadvantage,smallsamplesizes,what-ifscenarios,poorlylabeledrealdata,bias,consistent
+∗ThisworkwasperformedwhenBéniEgressywaswithIBMResearchEurope.
+37thConferenceonNeuralInformationProcessingSystems(NeurIPS2023)TrackonDatasetsandBenchmarks.
+4202
+naJ
+52
+]IA.sc[
+3v42461.6032:viXra
+
+===== PAGE 2 =====
+Tra ID ns. Timestamp b S a o n u k r c I e D A S c o c u o r u c n e t b T a a n rg k e I t D A T c a c r o g u e n t t Amount Currency Pa t y y m pe ent A 7 2 0 J 1 U 9 L
+0 3 MAY 2019 12:45 1 A 1 C 1400 USD Cheque D
+3 MAY
+1 15 MAY 2019 07:34 2 B 1 C 710 EUR ACH 2019 1 JUN
+2019
+2 18 MAY 2019 16:55 3 E 1 C 950 USD Credit card
+3 1 JUN 2019 10:06 1 C 3 D 1200 CHF Wire C
+4 27 JUN 2019 13:18 3 E 3 D 2300 EUR Credit card
+5 7 JUL 2019 11:14 3 D 1 A 1100 USD Credit card E
+6 14 JUL 2019 09:37 2 B 3 E 650 USD ACH
+B
+7 20 JUL 2019 14:02 3 E 3 D 2500 USD Wire
+(a) (b)
+Figure1: Financialtransactionsin(a)tabularformatandin(b)graphformat.
+baselinedataforregulators,andmore. Realisticsyntheticdatacanhelpaddressmanyoftheseissues
+buthasitsownchallenges. Forexample,doessyntheticdatamatchrealdataanddesiredscenarios?
+Cansyntheticdatabeconstructedwithoutaccesstoinstancesofrealdatabeingimitated? Weaddress
+thesequestionsinSections2and3.
+Relationaltablesarethemostcommonwayofstoringfinancialdata. Figure1aillustratesfinancial
+transactionsstoredinatabularformat,whereeachrowisatransactionthattransfersfinancialassets
+fromasourceaccounttoadestinationaccount,potentiallyheldindifferentbanks. Theamount,the
+timestamp,thepaymentcurrency,andthepaymenttypearealsoindicatedforeachtransaction.
+Graphsofferanaturalrepresentationforfinancialtransactiondata.Agraph-baseddatarepresentation
+exposestheconnectivityoftheunderlyingdataobjectsandmakesitpossibletoextractcomplex
+patterns of interactions between them. The graph-based representation of transactions shown in
+Figure1aisillustratedinFigure1b. Inafinancialtransactiongraph,thenodestypicallyrepresentac-
+countsandthedirectededgesbetweentheaccountsrepresentfinancialtransactions. Severaldifferent
+transactionsbetweenthesametwoaccountscantakeplaceatdifferentpointsintimeasillustrated
+inFigure1b. Therefore,financialtransactiongraphsareessentiallydirectedmultigraphs[10]. This
+generalgraphstructureunderliesmanyfinancialcrimeanalysistechniques[63,43].
+Financialcrimereferstoillegalactscommittedtoobtainfinancialgain. Financialcrimeisoften
+linked with suspicious account activities. For instance, in financial transaction graphs, a cycle
+representsaseriesoftransactionsinwhichthemoneyinitiallysentfromonebankaccountreturns
+backtothesameaccount;theexistenceofsuchcyclesisastrongindicatorofmoneylaundering[58].
+Figure1bprovidesaclearvisualdepictionofcyclesinmoneylaundering, whichconsistsofthe
+highlightedtransactionsfromFigure1a. Similarly,incryptocurrencytransactionnetworks,criminals
+use sophisticated mixing and shuffling schemes to cover the traces of their activities [34]. Such
+schemescanusuallybeexpressedintermsofsubgraphstructures,suchasscatter-gatherandbipartite
+patterns[58,55,33,46]Efficientdiscoveryofsuchsuspiciouspatternsofinteractionsacrossaccount
+holderscanenabletimelyandcost-effectivedetectionofcriminalactivitiesandtheirperpetrators.
+Ourcontributionscanbelistedasfollows:
+• A synthetic financial transaction generator, which builds a multi-agent virtual world in
+which some of the agents are criminals with illicit income to launder. This synthetic
+approach provides perfect information about which transactions are laundering and the
+specificpatterns,suchascycles,thatareusedineachinstance. Thisperfectinformationis
+notavailableinrealdata. Section3providesadditionaldetails.
+• Asetofrealistic,standardizedAMLdatasetsthatcanbeusedfordevelopingandbench-
+markingnewmoneylaunderingdetectionmodels. Thedatasetscoverarangeofsizesand
+difficultiesandareallmadepubliclyavailable.
+• AsetofinitialexperimentswithGraphNeuralNetworks(GNNs)andwithGradientBoosted
+Trees(GBT)thatdemonstratetheuseofthedatasetsandprovidebaselinesforfuturework.
+Importantly,ourGNNcodeisopensource. Inaddition,ourGBTresultscanbereproduced
+usingpubliclyavailabletools. OurexperimentalevaluationispresentedinSection4.
+• ObservationsinSection7abouthowourdatareleaseisethicallysoundandsupportsthe
+fightagainstmoneylaunderingandotherformsoffinancialcrime.
+2 RelatedWork
+Despitetheimportanceofgooddataformoneylaunderingdetection,legal,privacy,andcompetition
+concernsmeanthatrealfinancialtransactiondataisnotgenerallyavailable[52,31]. Eveninthe
+2
+
+--- TABLE 1 on PAGE 2 ---
+Trans.
+ID | Timestamp | Source
+bank ID | Source
+Account | Target
+bank ID | Target
+Account | Amount | Currency | Payment
+type
+0 | 3 MAY 2019 12:45 | 1 | A | 1 | C | 1400 | USD | Cheque
+1 | 15 MAY 2019 07:34 | 2 | B | 1 | C | 710 | EUR | ACH
+2 | 18 MAY 2019 16:55 | 3 | E | 1 | C | 950 | USD | Credit card
+3 | 1 JUN 2019 10:06 | 1 | C | 3 | D | 1200 | CHF | Wire
+4 | 27 JUN 2019 13:18 | 3 | E | 3 | D | 2300 | EUR | Credit card
+5 | 7 JUL 2019 11:14 | 3 | D | 1 | A | 1100 | USD | Credit card
+6 | 14 JUL 2019 09:37 | 2 | B | 3 | E | 650 | USD | ACH
+7 | 20 JUL 2019 14:02 | 3 | E | 3 | D | 2500 | USD | Wire
+
+===== PAGE 3 =====
+Table1: ComparisontokeyprevioussyntheticAMLdata.
+MLDP AMLsim AMLworld(ThisWork)
+Doplacement? ✓ ✓
+Dolayering? ✓ ✓ ✓
+Dointegration? ✓ ✓
+Model8keypatterns? ✓ ✓
+Modelotherpatterns? ✓ ✓
+Modelmultiplebanks? ✓
+Modelmultiplecurrencies? ✓
+Complexentitygraph? ✓
+Modeltransfers,payments,credits,etc.? Transfersonly Transfersonly ✓
+#ofTransactions 2,340 1.32M 180M
+Launderingrates 3/5 1/762 1/807&1/1,750
+restricted cases when anonymized data is available, ground truth labels are not known and data
+labelingisinherentlypoorsincelaunderingoftengoesundetected[7,5,6].
+Forexample,oneofthefewstudiestouse“real”dataisfromStarninietal.[56]whichreports6
+months of data from a major Italian bank with 180M transactions. Although myriad laundering
+patterns are possible, this work looks for only two patterns (aka smurfs or motifs), and there is
+noguaranteethatallinstancesofthesetwopatternsaredetected. Inaddition,thisdatawasmade
+availableonlytoStarninietal. andappearsnottobeavailableforusebyotherinvestigators.
+Onasmallerscale,Harrisetal.[24]received2,827transactionhistorysummariesfor4,469customers
+ofScotiaBankinCanada,withthegoalofassessingwhichcustomersposeahighriskforlaundering.
+To get around these data availability issues, there have been proposals across many domains to
+generatesyntheticdata[53,45,44,32,40,61,37]. However,tothebestofourknowledge,existing
+AMLeffortssufferfromoneormoreofthefollowingshortcomings: (i)thesyntheticdatagenerators
+need access to real data, which they can then mimic; (ii) the AML data lacks authoritative is-
+launderinglabels;or(iii)thedataproducedlacksimportantattributesofrealdata.
+ThesmallsetofprevioussyntheticAMLeffortsareagent-based,likeours. However,agent-based
+simulationscanvarysignificantlyintheirapproach,e.g. modelingmoreorlessdetail,orusinga
+largerorsmallernumberofagents. Foractivitieslikemoneylaundering,withonlyatinyfraction
+ofillicittransactions(i.e. minorityclasstransactions),modelingfidelityandscalematters. Table1
+outlineskeyaspectsofmoneylaunderingdata. Table1alsonotesthecapabilitiesanddifferences
+betweenourapproachAMLworld,detailedinSection3,andtwoofthemostprominentprevious
+effortstogeneratesyntheticlaunderingdata: MoneyLaunderingDataProduction(MLDP)[38,39]
+andAMLsim[63,57,9]. AsTable1suggests,thecapabilitiesofAMLworldaresignificantlymore
+advancedthanthoseofitspredecessors,makingformorerobustdatasets. (Termslikeplacement,
+layering,andintegrationwillbedefinedinSection3,aswillthe“8keypatterns.”) Highernumbersof
+transactionsandlowerlaunderingratesaregenerallymorerealistic,andthereforemoreuseful. The
+2,340transactionsand60%launderingrateforMLDPsuggestatiny,unrealisticscenario. Section3.3
+providesadditionaldetailaboutAMLworldandAMLSimandaboutthetechniquesusedinAMLworld
+toenhancerealism.
+GNNs[65,59,14,30,23,15,35,62]arepowerfulmachinelearningmodelsspecificallydesigned
+for relational data (graphs). In particular, they can also be used for financial crime detection in
+transaction networks. Cardoso et al. [15] and Weber et al. [64] use GNNs for money laundering
+detection,Kanezashietal.[28]useGNNsforphishingdetectionontheEthereumblockchain,and
+Raoetal.[47]usesaGNNtodetectfraudulenttransactions. GraphSubstructureNetwork,proposed
+byBouritsasetal.[14],takesadvantageofpre-calculatedsubgraphpatterncountstoimprovethe
+expressivityofGNNs. GNNscouldalsobeusedtocountsubgraphpatterns,suchasinChenetal.
+[17],whichcanenabledetectingpatternsassociatedwithfinancialcrime.
+3 SyntheticDatasets
+Abundantlabeleddataisavailableforkeydomainssuchasimages,speech,naturallanguageprocess-
+ing,andrecommendationengines. However,duetoconcernsregardingprivacy,law,andcompetitive
+3
+
+===== PAGE 4 =====
+intermediate
+vertices
+𝑣 𝑣 𝑣 𝑣 𝑢
+(a) Fan-out (b) Fan-in (c) Gather-scatter(d) Scatter-gather (e) Simple cycle (f) Random (g) Bipartite (h) Stack
+Figure2: LaunderingPatternsModelled
+advantage,littleornofinancialtransactiondataisbroadlyavailable. Tothisend,we: (1)introduce
+ourdetailedAMLworldgenerator,and(2)makemultipledatasetsproducedbyAMLworldpublic.
+3.1 MotivationforSyntheticData
+Asidefromthedifficultyofaccessingrealfinancialdatawithlaunderingtransactions,realdatahas
+shortcomingsthatsyntheticdatacanhelpovercome:
+• Individualbanksseeonlytheirowntransactions–notthetransactionsatthemultitudeof
+otherinstitutionswithwhichthebank’scustomerstransact.
+• Groundtruthlabelsareusuallyincomplete,withmanyinstancesoflaunderingbeingmissed.
+Asaresult,manyAMLmodelsmislabellaunderingtransactions(falsenegatives).
+• Identifyingcomplexmoneylaunderingpatternsinrealdatarequiresadditionalwork–ifit
+isevenpossibleforindividualbanks(pleaseseethefirstbulletpoint).
+Theconclusivegroundtruthlabelsinsyntheticdataenabletheprecisecomparisonofdifferentmodels.
+Additionally,themultiplebanksinsyntheticdataenablemeasurementofhowmuchperformance
+would improve if banks could share their data in a federated learning setup. The scenario of an
+individualbankcaneasilybesimulatedbyfilteringthesyntheticdata.
+3.2 AMLpatterns
+IntheirAMLSimgenerator,SuzumuraandKanezashi[57]introducedasetof8patterns2oftenused
+in money laundering. These 8 patterns are illustrated in Figure 2. Among its many capabilities
+outlinedinSection3.3,ourAMLworldalsogeneratesthese8patterns.
+Tobemoreprecise,afan-outpatternofvertexv,showninFigure2a,isdefinedbytheoutgoingedges
+ofvconnectingvtoatleastk ≥2differentvertices[58]. Analogously,forafan-inpattern,shownin
+Figure2b,visconnectedtok ≥2differentverticesviaincomingedges. Agather-scatterpattern
+combinesafan-inpatternwithafan-outpatternofthesamevertex,asillustratedinFigure2c[55]. A
+fan-outpatternofavertexv andafan-inpatternofavertexuformascatter-gatherpatternifthe
+fan-outandthefan-inpatternsconnectverticesvandu,respectively,tothesamesetofintermediate
+vertices[55]. Figure2dshowsanexampleofascatter-gatherpatternwithfourintermediatevertices.
+A simple cycle pattern, shown in Figure 2e, is a sequence of edges that starts and ends with the
+samevertexandvisitsotherverticesatmostonce[27,12]. Figure1showsacycleinthefinancial
+transaction graph, in which node A launders money through nodes C and D. A Random pattern,
+depictedinFigure2f,issimilartothecyclepatterninFigure2e–exceptwithrandomfundsarenot
+returnedtotheiroriginalaccount. Assuch,randomcanbeviewedasarandomwalkamongaccounts
+ownedorcontrolled(e.g. throughshellcompanies). AbipartitepatterninFigure2gmovesfunds
+fromasetofinputaccountstoasetofoutputaccounts. Finally,astackpatterninFigure2hextends
+thebipartitepatternbyaddinganadditionalbipartitelayer.
+Inthesecases,aswithallthelaunderingpatterns,thelaunderingentityownsorcontrolsallaccounts
+(nodes)used. Forexample,anentitymay“control”shellcompanies,thatappearto“own”anaccount.
+Overtheyears,ruleshavebecomestricteraboutwhoistheUltimateBeneficialOwner(UBO)of
+anaccount. However,accurateUBOdesignationscanbedifficulttoenforceordetect. Notealso
+thatsomeentitiesownorcontrolmorenodesthanothers,andthuscanhavelargerpatternsormore
+variationintheirnodeselection.
+4
+
+===== PAGE 5 =====
+Figure3: OverviewofAMLSim.
+Figure4: OverviewofAMLworldSimulation.
+3.3 WhatisnewinourAMLworldgenerator?
+OurAMLworldgeneratorattemptstoimproveonthepioneeringeffortsofAMLSim[57]. Table1
+in Section 2 gives a breakdown of the differences. For more detail, Figure 3 depicts AMLSim
+andFigure4depictsAMLworld. Asthefiguressuggest, AMLworldmodelsamuchrichersetof
+characteristics.
+Forexample,AMLworldmodelstheentiremoneylaunderingcycle[19]: (1)Placement: sourceslike
+smugglingofillicitfunds;(2)Layering: mixingtheillicitfundsintothefinancialsystem;and(3)
+Integration: spendingtheillicitfunds.
+AMLSim focuses only on (2) Layering – hence the patterns described in Section 3.2. Placement
+in AMLworld can come from 9 sources of criminal activity: extortion, loan sharking, gambling,
+prostitution,kidnapping,robbery,embezzlement,drugs,andsmuggling. Moneyreceivedandthe
+frequencyofthesecriminalenterprisesvarybyactivityandbytheactingentity. Illicitfundsarethen
+layeredintothefinancialsystem(underAinFigure4). IntegrationhappensunderBatthebottom
+right of Figure 4 when criminal entities decide how to deploy their funds. AMLSim by contrast
+handlesonlylayering. TosupportthisdetailedlaunderingmodelAMLworldtagsillicitfundsfrom
+theirorigin(e.g. smugglingproceeds)throughalltransactionsusedtolaunderthosefunds.
+AMLworldalsohasmoredetailedmodelingofpopulationandtransactioncharacteristics,andlaunder-
+ingactivityisnotlimitedtospecificpatterns. Section3.4outlinesotherkeyattributesofAMLworld
+includingtheAMLworldmechanismstosupport“SelectCounterParty”attheupperrightofFigure4.
+2SomeAMLpapersrefertopatternsassmurfsormotifs.
+5
+
+===== PAGE 6 =====
+Stock
+Bank Account Supplier 2
+Retail
+Employer Person
+Company
+Bank Account Supplier 1
+Bank Account Bank Account Bank Account
+Figure5: Illustrationoftheentity/circularflowgraphrepresentingourVirtualWorldModel.
+3.4 TheVirtualWorldModel
+AtitsfoundationAMLworldbuildsamulti-agentvirtualworldofbanks,individuals,andcompanies–
+withindividualsandcompaniesbuyingitems,andmakingbanktransferstogetsupplies,paysalaries,
+paypensions,etc. Theunderlyingmodelhasgoodandbadactors,withbadactorsdoingthingslike
+smugglingasnotedinSection3.3.
+Thebadactors’attemptstolaundertheirillicitfundsresultinmoney-launderingtransactions. In
+additiontothelaunderingpatternsdiscussedabove,AMLworldalsomakessomelaunderingtransfers
+happen"naturally",e.g. acriminalbosslaundersmoneybypayingemployees,buyingsupplies,etc.
+ThedataproducedisasetoftransactionsasillustratedinFigure1,witheachtransactionlabeledas
+laundering(illicit)ornot. AMLworldhasbeenusedtogeneratebillionsoftransactionsinavarietyof
+currenciesincludingdollars,euros,yuan,yen,bitcoin,andmore.
+The actions of all agents in our virtual world are governed by statistical distributions. Thus the
+modelanddataarenotbasedonobfuscatingoranonymizingrealindividuals,butarebasedonreal
+statistics. Likewise,ourmodelusesnoseedofrealtransactionsfromwhichtoexpand. Everythingis
+synthetic.Morespecifically,asdepictedinFigure5,theunderlyingvirtualworldmodelofAMLworld
+usesacomplexentitygraphwheredifferententitiesareconnectedinmanyways. Forexample,a
+company serves as an employer, but may also offer retail sales or supply products or services to
+othercompaniesandindividuals. Anindividualorcompanymayalsoownothercompaniesorparts
+(shares)ofcompanies. Eachentity(personorcompany)ownsoneormorebankaccountsdirectly
+andviasubsidiaries.
+TheentitygraphinFigure5isessentiallyavariantoftheCircularFlowgraphsusedtomeasureGDP
+(GrossDomesticProduct)[3]. Assuchanyfinancialactor(personorcompany)canbea(blue)major
+node, andeachsuchmajornodecanownoneormorebankaccounts. Edgesinthegraphreflect
+financialflowsbetweenthesenodes. (Flowsareoftenbidirectional,butforsimplicity,Figure5shows
+onlyasubsetofimportantflowdirections.)
+Transactionsaregeneratedbasedontheserelationshipsandatappropriatefrequencies. Forexample,
+salariesaretypicallypaidweekly,biweekly,ormonthly(asnotedinFigure4). Interestisalmost
+alwayspaidmonthly. Inaddition,asmallnumberoflaunderingtransactionsareconductedbyentities
+withfundsfromillicitactivities. Sincethegeneratorknowsthesourceofallfunds,itknowswhich
+transfersarelaundering.
+ReturningtoFigure5,thecircularflowgraphrepresentingourvirtualworldillustratesseveralother
+importantaspectsofourapproach:
+• Thecircularflowgraphenablesthegenerationofafinancialtransactiongraph(seeFigure1)
+–withalistofalltransactionsbetweenentitiesduringthetimeperiodofsimulation.
+• Therearemultipletypesofentitiesinthemodel,includingindividuals,corporations,part-
+nerships,andsoleproprietors. Banksareaspecialtypeofentityinthemodelastheyarethe
+locusofmostfinancialtransactionsamongtheothertypes.
+• Entitiessuchaspeopleandcompanieshavebankaccountsthroughwhichtheirtransactions
+areconducted. Eachpersonandeachcompanymayhavemultiplebankaccountsacross
+multiplebanks. Thisspreadingcanfurtherlegitimatepursuitssuchassavingandspending,
+butcanalsofacilitateillegalactivitysuchasobfuscatingfundsourcesduringlaundering.
+• Ownershipofcompaniesiscross-linked,e.g. companyXmayowncompanyYinwhole
+orpart(e.g. throughstock). Individualsmayalsoowncompaniesinwholeorpart. This
+ownership pattern serves two functions for AMLworld: (1) it represents the legitimate
+complexityoftheworld,and(2)itallowslayersofshellcompaniestobecreatedthrough
+6
+
+--- TABLE 1 on PAGE 6 ---
+Stock
+Bank Account Supplier 2
+Retail
+Employer Person
+Company
+Bank Account Supplier 1
+Bank Account Bank Account Bank Account | 
+ | Bank Account
+
+===== PAGE 7 =====
+which bad actors can launder their ill-gotten funds. These shell companies may have
+accountsatarbitrarybanks,e.g. theiraccountsmaybeatdifferentbanksthantheprimary
+bankaccountsoftheircontrollingentity.
+• ThegraphstructureinFigure5isarbitrary,e.g. thegraphisnotbipartitebetweenmerchants
+andconsumersascanbethecaseinmodelingcreditcardtransactions[8].
+The AMLworld simulator parameterizes population and transaction information to facilitate: (a)
+tuning;(b)modelingfuturechangesinbehavior;and(c)updatingtobettermatchrealbehavior. For
+(c),authoritativerealdataisnotalwaysavailable. FeedbackloopsinAMLworldalsoenforceadegree
+oftuningtomakestatisticsconsistentwithobservedbehavior. Forexample,ifresultsshowtoomany
+transactionsperpersonpermonth,thenparametersmaybeadjusted. Someeventsaremoreimportant
+thanothers,e.g. movingmoneytoavoidanegativebankaccountbalancetakesprecedenceinmost
+casesovermovingmoneytogetahigherinterestrate. Sinceparametersarenotallindependent,a
+certainamountofiterationisneededtoarriveataconsistentsetofparameters.
+Assuggestedbypoint(b)ofthepreviousparagraph,parameterizationisalsousefulforchecking
+what-ifscenarios,e.g. whatifthereweremorelaundering,orwhatiftherewerechangestobanking
+laws? Syntheticdataenablestheseexplorations,whicharenotpossiblewithrealdata.
+Finally,wenotethelaunderingtagonfinancialtransfersistransitiveinAMLworld. IfApaysB$100
+inillicitfunds,andBthenpays$50ofthosefundstoC,andCpays$25ofthe$50toD,thennot
+onlyistheinitial$100consideredlaundering,butthe$50andthe$25arealso. Thistransitivityis
+supportedbydetailedtracking;AMLworldpropagatesthistagthroughalltransactions,including
+co-minglingoffundsfromlegitimateandnon-legitimatesources. AMLworld’scompletelabelingof
+launderingisnearlyimpossiblewithreal-worlddata.
+3.5 PublicAvailabilityofSyntheticData
+WehaveusedAMLworldtocreateseveralsyntheticAMLdatasetsthathavebeenmadeavailable
+onKaggle[50]. Dataisdividedintotwohigh-levelgroups: HIandLI,withhigherandlowerillicit
+ratios(laundering)respectively. BothHIandLIarefurtherdividedintosmall,medium,andlarge
+datasets,withlargehaving175M −180M transactions. Duetospaceconstraints,Table4inthe
+Appendixprovidesdetailsaboutthedatasets.
+However,todemonstratetherealismofAMLworld,wediscussseveralstatisticsabouttheLI-Large
+dataset. LI-Largehas176Mtransactionsspanningalittleover3months. WefocusonLI-Large,
+but apart from their size and laundering rates, the other five datasets have similar characteristics.
+SeveralfiguresintheAppendixprovidegroundingabouttherealismofourdata. Figure7histograms
+annualizedtransactionsperaccount,anditsdistributionroughlyalignswithU.S.FederalReserve
+data[51]. Table5showsthedistributionoftransactionformatslikeACH,wire,andcheque. Again
+numberscorrespondroughlywithFederalReservestatistics[41].
+Overall1in1,750transactionsislaunderinginLI-Large.Forcomparison,Starninietal.[56]reporton
+realdatawith180Mtransactionsover6monthsfromamajorItalianbank. Theyfind855laundering
+motifs(equivalenttoourGather-ScatterandScatter-Gatherpatterns),eachwith“lessthan20[nodes]
+total”. Thisamountstoaround1launderingtransactionper21,000. BycomparisonAppendixTable7
+indicatesLI-Largehas8,212combinedGather-ScatterandScatter-Gathertransactions–yieldinga
+verysimilar1launderingtransactionper21,440transactionsfromthesepatterns.
+4 PerformanceEvaluationofMachineLearningModels
+Inthissection,weprovideapreliminaryevaluationofthesuitabilityofoursyntheticdatasetsfor
+creatingeffectivemachinelearningmodels. Adeepertreatmentandevaluationisbeyondthescope
+ofthis“datasetsandbenchmarks”submission,butcanbefoundintheworkofEgressyet. al.[20].
+Inakeyway,thesemeasurementsareevenbetterthanusingrealdata: thegroundtruthlabelsare
+complete,whilstmanylaunderingtransactionsinrealdataareneverdetected.
+WetrainGradientBoostedTree(GBT)andpopularmessage-passingGraphNeuralNetwork(GNN)
+modelsonthedatasetsintroducedinSection3.5,usingthetabular-andgraph-baseddatarepresenta-
+tions,respectively. ParametertuningforGBTsandGNNsisdescribedinSectionCoftheappendix.
+7
+
+===== PAGE 8 =====
+SourceanddestinationaccountIDsofthetransactionsarenotusedasfeaturesinourexperiments,
+whichpreventsourmodelsfromrecognizinglaunderingtransactionssimplybylearningaccountIDs.
+GBTBaselinesWeuseLightGBM[29]andXGBoost[16]asourGBTbaselines,whicharewidely
+usedmachinelearningmodelsfortabulardata. GBTbaselineexperimentswereperformedusing
+version3.1.1ofLightGBMandversion1.7.6ofXGBoost. ToimprovetheperformanceoftheseGBT
+models,weuseGraphFeaturePreprocessor(GFP)[48,49],whichcreatesadditionalfeaturesforthe
+datasets. Toachievethis,GFPinterpretstheinputdataasagraphandextractsvariousgraph-based
+featuresfromthisgraph,suchasvertexstatisticsandnumberofsimplecycles[13,12]. Asaresult,
+GBTmodelscanexploittheunderlyinggraphstructureofthedatasets. SectionDoftheappendix
+providesdetailsonhowGFPwasconfiguredfortheexperimentalevaluation.
+GNNBaselinesGIN(GraphIsomorphismNetwork)withedgefeatures[65,25]andPNA(Principal
+Neighbourhood Aggregation) [60, 18] are used as GNN baselines. Since AML is a transaction
+classificationproblem,wealsoincludeabaselineusingedgeupdates(GIN+EU)[11]. Thisapproach
+is similar to the architecture used by Cardoso et al. [15], which has recently been used in self-
+supervisedmoneylaunderingdetection. NotethattheGNNresultsfortheLargedatasetsarenot
+availablebecausetrainingmodelsforthesedatasetsrequiressignificantlymorecomputeresources.
+Becausetheverticesareaccountsandtheedgesaretransactionsinourfinancialtransactiongraph
+representation,detectionofillicittransactionsisanedgeclassificationproblem. AllourGNNsuse
+afinaledgereadoutlayerthatperformsclassificationusingtheedgeembeddingandtherespective
+endpointnodeembeddingsasinput. Toreducethecomplexity,weuseneighborhoodsampling[23]
+whentrainingandtestingourGNNmodels. Wesample100one-hopand100two-hopneighbors.
+DataSplitWeusea60-20-20temporaltrain-validation-testsplit,i.e.,wesplitthetransactionindices
+afterorderingthembytheirtimestamps. Thedatasplitisdefinedbytwotimestamps,t andt . Train
+1 2
+indicescorrespondtotransactionsbeforetimet ,validationindicestotransactionsbetweentimes
+1
+t andt ,andtestindicestotransactionsaftert . However,intheGNNcase,thevalidationand
+1 2 2
+testsettransactionsneedaccesstotheprevioustransactionstoidentifypatterns. Soweconstruct
+train,validation,andtestgraphs. Thiscorrespondstoconsideringthefinancialtransactiongraphasa
+dynamicgraphandtakingthreesnapshotsattimest ,t ,andt =t . Thetraingraphcontains
+1 2 3 max
+onlythetrainingtransactions(andcorrespondingnodes). Thevalidationgraphcontainsthetraining
+andvalidationtransactions,butonlythevalidationindicesareusedforevaluation. Thetestgraph
+containsallthetransactions,butonlythetestindicesareusedforevaluation. Thisisthemostlikely
+scenariofacedbybanksandfinancialauthoritieswhenclassifyingunseenbatchesoftransactions.
+EvaluationofGBTandGNNBaselinesAsourproposeddatasetsarenaturallyveryimbalanced,
+traditionalmetricslikeaccuracydonotprovideareliablemeasureofmodelperformance. Inthis
+context,wehavechosentoemphasizetheF1scorefortheminorityclass.Detailedprecisionandrecall
+scoresfortheGNNbaselinescanbefoundinappendixSectionE.Table2showcasestheinference
+performancefortherangeofmodelsevaluated. Theseresultsshowthatmessage-passingGNNs
+that exploit the connectivity between accounts are effective in capturing laundering transactions.
+AdvancedGNNarchitecturessuchasPNAandGIN+EU,whichrespectivelyimplementextended
+messageaggregationandedgeupdatemechanisms, significantlyenhancetheGNNperformance.
+Furthermore,thecombinationofGFPwithgradientboostingtechniques,specificallyLightGBMand
+XGBoost,alsodemonstratesstrongperformanceacrossdifferentdatasets. Aninterestingobservation
+isthenear-parperformanceofPNAwithGBTbaselines,evenwithoutrelyingonhandcraftedfeatures.
+TheLIdatasetspresentmoresignificantpredictivechallengescomparedtotheHIdatasets. This
+isprimarilyattributedtotheirlowerillicitratiosaswellasthelongertimespanoftheirlaundering
+patterns. TheprimarydifferencebetweenLIandHIdatasetsisthatcriminalslaunderlessfrequently
+in LI, which makes it harder to discover the laundering patterns. To address this, our models
+incorporatethemeasureofweightingthepredictionsoftheminorityclasshigherinthelossfunction.
+However,consideringtheintricaciesofdealingwiththeLIdatasets,exploringotherstrategies,such
+asthePickandChosemethod[36],whichemploysalabel-balancedsampler,orGraphSMOTE[66],
+whichintroducessyntheticminorityclasssamplesintheembeddingspace,maybeimperative.
+ThepredictionaccuracyonthemorechallengingLIdatasetscanbeimprovedbyreusingorfine-
+tuningmodelspretrainedontheHI datasets. Table3showsthatreusingthepretrainedLightGBM
+and PNA models on the HI-Medium and -Large datasets enables higher F1 scores than those of
+XGBoostmodelstrainedontherespectiveLIdatasets(seeTable2). Furthermore,theclassification
+8
+
+===== PAGE 9 =====
+Table2: MinorityclassF1scores(%). HIindicatesahigherillicitratio. LIindicatesalowerratio.
+Model HI-Small LI-Small HI-Medium LI-Medium HI-Large LI-Large
+GIN[65,25] 28.70±1.13 7.90±2.78 42.30±0.44 3.86±3.62 NA NA
+GIN+EU[11,15] 47.73±7.86 20.62±2.41 49.26±4.02 6.19±8.32 NA NA
+PNA[60] 56.77±2.41 16.45±1.46 59.71±1.91 27.73±1.65 NA NA
+GFP[48,49]+LightGBM[29] 62.86±0.25 20.83±1.50 59.48±0.15 20.85±0.38 48.67±0.24 17.09±0.46
+GFP[48,49]+XGBoost[16] 63.23±0.17 27.30±0.33 65.70±0.26 28.16±0.14 42.68±12.93 24.23±0.12
+Table3: MinorityclassF1scores(%)ofmodelstrainedonHIdatasetsandevaluatedonLIdatasets.
+Model LI-Small LI-Medium LI-Large
+PNA[60] 0.00±0.00 36.60±0.74 NA
+PNA[60]+fine-tuning(5epochs) 27.38±1.03 36.84±1.64 NA
+GFP[48,49]+LightGBM[29] 0.02±0.03 32.51±0.24 21.77±0.15
+GFP[48,49]+XGBoost[16] 0.00±0.00 30.31±0.28 17.48±6.90
+100%
+80%
+60%
+40%
+20%
+0%
+1 3 5 7 9 11 31 51 71 91 12 32 52 72 92
+Private graph, private model Private graph, shared model Shared graph, shared model
+100%
+80%
+60%
+40%
+20%
+0%
+Bank ID
+1 3 5 7 9 11 31 51 71 91 12 32 52 72 92
+Bank ID
+erocs
+1F
+ssalc-ytironiM
+gva
+(a) (b)
+gva
+Figure6:Effectofdataandmodelsharingacrossbanksfor(a)HI-Mediumand(b)HI-Largedatasets.
+performanceonLIdatacanbeimprovedfurtherfortheLI-Smalldataset,wheredirectlyusingthe
+modelstrainedonHIdatasetsisineffective,byfine-tuningtheHIPNAmodelsusingtheLIdataset.
+InFigure6,wereportresultsonHI-MediumandHI-LargedatasetsforindividualbanksusingGFP
+tocreatefeaturesandLightGBMtobuildmodels. RelatedexperimentsperformedontheLI-Medium
+andLI-LargedatasetscanbefoundinSectionFoftheappendix. Forbrevity,wefocusonthetop-30
+banksthatparticipateinthelargestnumberoftransactionsineachdataset. Weevaluatethreesetups:
+• Inthesharedgraph,sharedmodelsetup,bankssharealltheirtransactionswitheachother
+tocreateasharedfinancialtransactiongraph. TheGFPisappliedtothissharedgraphto
+extractgraphfeatures,whicharealsoshared. AsharedLightGBMmodelisbuiltusingthis
+shareddata,whichthebanksusetoscoretheirowntransactions. Notethattheresultsgiven
+inTable2showtheaggregateF1scoreforallthebanksproducedusingthesamesetup.
+• Theprivategraph,privatemodelsetupcomputestheF1scoresusingtheLightGBMmodels
+trained separately by each bank on its private data. In this setup, a bank sees only the
+transactionsperformedbyitsownaccountholders. Aprivategraphisconstructedusing
+these transactions, and the GFP is executed on this private graph to extract features. In
+addition,eachbanktrainsitsownmodelonitsowndata,sothereisnomodelsharingeither.
+• Intheprivategraph,sharedmodelsetup,eachbankcreatesaprivatetransactiongraphand
+extractsgraphfeaturesfromitusingGFPasinthepreviouscase. Thebanksdonotshare
+thesourceanddestinationaccountidswitheachother,butsharetheremainingtransaction
+features,includingthegraphfeatures. AsharedLightGBMmodelistrainedusingthisdata.
+Figure6showsthat,ingeneral,financialinstitutionscanachievehigherF1scoresbybuildingshared
+machinelearningmodels. However,buildingsharedmodelsontopofsharedfinancialtransaction
+graphsleadstoevenmoresignificantimprovements. Toachievesuchaccuracyimprovementsina
+privacy-preservingmanner,financialinstitutionscanusedifferentially-privatemodelandtopology
+sharingtechniques. Eventhoughevaluationofsuchtechniquesisoutsidethescopeofourwork,we
+believethatourcontributeddatasetsofferavaluabletestinggroundforbuildingsuchapproaches.
+5 FutureWorkandResearchAvenues
+The focus of this paper is the generation of high-quality datasets and their use to build effective
+anti-moneylaunderingmodels. Herearesomeadditionalresearchopportunitiesthatfollownaturally:
+1. Historically,AMLmodelshavefocusedontransactionsatonebank–becausethatisthe
+onlydataavailabletoindividualbanksthatreviewtransactionsforlaundering. Oursynthetic
+9
+
+--- TABLE 1 on PAGE 9 ---
+28.70±1.13
+47.73±7.86
+56.77±2.41
+] 62.86±0.25
+63.23±0.17 | 7.90±2.78 | 42.30±0.44 3.86 | ±3.62 NA | NA
+ | 20.62±2.41 | 49.26±4.02 6.19 | ±8.32 NA | NA
+ | 16.45±1.46 | 59.71±1.91 27.73 | ±1.65 NA | NA
+ | 20.83±1.50 | 59.48±0.15 20.85 | ±0.38 48.67±0.24 | 17.09±0.46
+ | 27.30±0.33 | 65.70±0.26 28.16 | ±0.14 42.68±12.93 | 24.23±0.12
+
+===== PAGE 10 =====
+dataenablesanalysisacrossmultiplebanksasshowninFigure6. Withthatcomesaneedto
+buildprivacy-preservingmachinelearningmodelsandgraphtopology-sharingtechniques.
+2. Whetherconsideringtransactionsatonebankoracrossbanks,thereisaneedformachine
+learninganddeeplearningmodelsthatcandetectcomplexAMLpatternsingraphdatasets.
+3. Buildingonpoints(1)and(2),usingdeepneuralnetworks,itmaybepossibletouseour
+synthetic cross-bank data for pre-training, before fine-tuning with real-world data. Our
+initialexperimentsgiveninTable3demonstratethattransferlearningisaviableapproach.
+4. Asnewmodelsandalgorithmsaredeveloped, itisimportantthattheyrunefficientlyin
+termsoftime,memoryconsumption,CPUandGPUuse,etc. Techniquestoachievesuch
+efficiencywhenanalyzingfinancialtransactionsdifferfromthoseneededinotherdomains.
+5. Others may find ways to improve our data generation method. For example, with our
+agent-basedapproach,therecanbechallengesaroundthestabilityofthedatageneration:
+minorparametertweakscansometimesyieldsignificantchangesinaggregateresults,such
+asthelaunderingrate. Generativemodelsforgraphscouldbeapromisingresearchavenue.
+6 Conclusions
+WehaveoutlinedAMLworld,adetailed,multi-agent,virtualworldapproachtogeneratingsynthetic
+financialdatalabeledformoneylaundering. Wehaveestablishedthatthegenerateddatamatchesreal-
+worlddatainkeyregards.AMLworlddataalsohasperfecttaggingforlaunderingactivity–something
+essentiallyimpossiblewithrealdata,wheretagstypicallymissagreatdealoflaunderingactivity.
+By providing realistic tagged data, AMLworld facilitates the development of money laundering
+detectionmodels,andourexperimentsprovidebaselinescores,demonstratingtheutilityandefficacy
+ofmachinelearningmodels. Lastly,AMLworldenablesthegenerationofmodelstodetectwhat-if
+launderingpatternsnotyetobservedinrealdata. SixAMLworlddatasetsarenowpubliclyavailable
+onKaggle[50]. OurinitialevaluationonthesedatasetsshowsthatGNNsandGBTscanbeeffective
+solutionsforidentifyinglaunderingtransactions. WhileGBTsrequiresomefeatureengineeringto
+capturecomplexlaunderingpatterns,GNNsoftenproducecompetitiveresultswithoutanyfeature
+engineering. Furtherresearchisneededtoenablecollaborationandcooperationbetweenfinancial
+institutionsthroughtheuseofdifferentially-privategraphtopologyandmodelsharingtechniques.
+7 Ethics
+WebelievethatourreleaseofthissyntheticlaunderingdatahelpsintheAMLfight.
+As noted in the Introduction, most laundering activity currently goes undetected. This suggests
+the malefactors have the upper hand – as opposed to domains like credit card fraud, where the
+largemajorityoffraudisdetectedandquickly. Onekeygoalinreleasingthisdataistofacilitate
+improvementsinlaunderingdetectiontoenableresultsclosertocreditcardfrauddetection.
+A key advantage for credit card fraud detection is that a close ground truth is well understood –
+via customer feedback about unpurchased items. Unfortunately, no good ground truth exists for
+launderingactivitiesinrealfinancialdata–leadingtohigherrorratesandmuchmissedfraud. By
+contrast,oursyntheticdatahasthisgroundtruththathasbeensohelpfulagainstcreditcardfraud.
+Beyondhelpingthegoodside,webelieveourdatahaslimitedpotentialtohelpthebadside. An
+obviouswaywemightdothatisbypublishingthealgorithmsusedbybankXtodetectlaundering.
+Laundererscouldthenchangetheirbehaviorsoastoavoidbeingflaggedbythealgorithms. With
+onlyastaticsetofdata,itismuchharderforlaundererstochangetheirbehaviortoavoiddetection.
+Tothispoint,weemphasizethatwhatwehaveopen-sourcedisasetofdata–notthecodetogenerate
+thedata. Iflaunderershadoursourcecode,itwouldbeeasierforthemtotweakthedataproduced
+andchecktheresultsversuswhateverdetectionalgorithmstheycouldgettheirhandson.
+WeofferafewadditionalobservationsonethicsinAppendixB.
+AcknowledgmentsandDisclosureofFunding
+ThesupportoftheSwissNationalScienceFoundation(projectnumbers: 172610and212158)for
+thisworkisgratefullyacknowledged.
+10
+
+===== PAGE 11 =====
+References
+[1] [n.d.]. Money Laundering. https://en.wikipedia.org/wiki/Danske_Bank_money_
+laundering_scandal
+[2] [n.d.]. Moneylaundering. https://en.wikipedia.org/wiki/Money_laundering
+[3] 2015. Measuring the Economy: A Primer on GDP and the National Income and Product
+Accounts. , 2pages. https://www.bea.gov/sites/default/files/methodologies/
+nipa_primer.pdf
+[4] 2017. Blind Spot in the AML Regime. https://www.finextra.com/blogposting/
+14298/online-payments-the-blind-spot-in-the-aml-regime
+[5] 2017. From Suspicion to Action: Converting financial intelligence into greater operational
+impact. , 4 pages. https://www.europol.europa.eu/cms/sites/default/files/
+documents/ql-01-17-932-en-c_pf_final.pdf
+[6] 2022. Money Laundering. https://www.unodc.org/unodc/en/money-laundering/
+overview.html
+[7] 2022. NationalMoneyLaunderingRiskAssessment. ,21pages. https://home.treasury.
+gov/system/files/136/2022-National-Money-Laundering-Risk-Assessment.pdf
+[8] ErikAltman.2021. SynthesizingCreditCardTransactions.InProceedingsoftheSecondACM
+InternationalConferenceonAIinFinance(ICAIF’21),AnisoaraCalinescuandLukaszSzpruch
+(Ed.).ACM,VirtualEvent. https://doi.org/10.1145/3490354.3494378
+[9] Ansh Ankul. 2021. IBM AMLSim Example Dataset. (2021).
+https://www.kaggle.com/datasets/anshankul/ibm-amlsim-example-dataset.
+[10] VKBalakrishnan.1997. GraphTheory. McGraw-HillProfessional,NewYork,NY.
+[11] PeterWBattaglia,JessicaBHamrick,VictorBapst,AlvaroSanchez-Gonzalez,ViniciusZam-
+baldi,MateuszMalinowski,AndreaTacchetti,DavidRaposo,AdamSantoro,RyanFaulkner,
+etal.2018. Relationalinductivebiases, deeplearning, andgraphnetworks. arXivpreprint
+arXiv:1806.01261(2018).
+[12] Jovan Blanuša, Paolo Ienne, and Kubilay Atasu. 2022. Scalable Fine-Grained Parallel Cy-
+cle Enumeration Algorithms. In Proceedings of the 34th ACM Symposium on Parallelism
+in Algorithms and Architectures (SPAA). ACM, Philadelphia PA USA, 247–258. https:
+//doi.org/10.1145/3490148.3538585
+[13] JovanBlanuša,KubilayAtasu,andPaoloIenne.2023.FastParallelAlgorithmsforEnumeration
+ofSimple,Temporal,andHop-constrainedCycles. ACMTrans.ParallelComput.10,3(Sept.
+2023),1–35. https://doi.org/10.1145/3611642
+[14] Giorgos Bouritsas, Fabrizio Frasca, Stefanos Zafeiriou, and Michael M. Bronstein. 2023.
+ImprovingGraphNeuralNetworkExpressivityviaSubgraphIsomorphismCounting. IEEE
+Trans.PatternAnal.Mach.Intell.45,1(Jan.2023),657–668. https://doi.org/10.1109/
+TPAMI.2022.3154319
+[15] Mário Cardoso, Pedro Saleiro, and Pedro Bizarro. 2022. LaundroGraph: Self-Supervised
+GraphRepresentationLearningforAnti-MoneyLaundering.InProceedingsoftheThirdACM
+InternationalConferenceonAIinFinance.130–138.
+[16] Tianqi Chen and Carlos Guestrin. 2016. XGBoost: A Scalable Tree Boosting System. In
+Proceedingsofthe22ndACMSIGKDDInternationalConferenceonKnowledgeDiscovery
+andDataMining(SanFrancisco,California,USA)(KDD’16).ACM,NewYork,NY,USA,
+785–794. https://doi.org/10.1145/2939672.2939785
+11
+
+===== PAGE 12 =====
+[17] ZhengdaoChen,LeiChen,SoledadVillar,andJoanBruna.2020. CanGraphNeuralNetworks
+Count Substructures?. In Advances in Neural Information Processing Systems 33: Annual
+ConferenceonNeuralInformationProcessingSystems2020,NeurIPS2020,December6-12,
+2020, virtual, Hugo Larochelle, Marc’Aurelio Ranzato, Raia Hadsell, Maria-Florina Bal-
+can,andHsuan-TienLin(Eds.). https://proceedings.neurips.cc/paper/2020/hash/
+75877cb75154206c4e65e76b88a12712-Abstract.html
+[18] Gabriele Corso, Luca Cavalleri, Dominiique Beaini, Pietro Lio, and Petar Velick-
+ovic. 2020. Principal Neighbourhood Aggregation for Graph Nets. NeurIPS
+abs/2111.15367 (2020). https://proceedings.neurips.cc/paper/2020/file/
+99cad265a1768cc2dd013f0e740300ae-Paper.pdf
+[19] KevinDolan.2022. AMLTrendsin2022: WhatYouNeedtoKnow. TechnicalReport.IDC.
+1–10pages. https://www.idc.com/getdoc.jsp?containerId=US48661022 Accessed:
+2023-01-10.
+[20] BeniEgressy,LucvonNiederhäusern,JovanBlanusa,ErikAltman,RogerWattenhofer,and
+KubilayAtasu.2023. ProvablyPowerfulGraphNeuralNetworksforDirectedMultigraphs.
+arXivpreprintarXiv:2306.11586(2023). https://arxiv.org/abs/2306.11586
+[21] MatthiasFeyandJanEricLenssen.2019. FastgraphrepresentationlearningwithPyTorch
+Geometric. arXivpreprintarXiv:1903.02428(2019).
+[22] Timnit Gebru, Jamie Morgenstern, Briana Vecchione, Jennifer Wortman Vaughan, Hanna
+Wallach, Hal Daumé III au2, and Kate Crawford. 2021. Datasheets for Datasets.
+arXiv:1803.09010[cs.DB]
+[23] WilliamL.Hamilton,RexYing,andJureLeskovec.2017. InductiveRepresentationLearning
+onLargeGraphs.InNIPS.
+[24] Daniel A. Harris, Kyla L. Pyndiura, Shelby L. Sturrock, and Rebecca A.G. Chris-
+tensen. 2021. Using real-world transaction data to identify money laundering:
+Leveraging traditional regression and machine learning techniques. (Dec. 2021).
+https://journal.stemfellowship.org/doi/pdf/10.17975/sfj-2021-006.
+[25] Weihua Hu, Bowen Liu, Joseph Gomes, Marinka Zitnik, Percy Liang, Vijay Pande, and
+Jure Leskovec. 2019. Strategies for pre-training graph neural networks. arXiv preprint
+arXiv:1905.12265(2019).
+[26] KevinJamiesonandRobertNowak.2014. Best-armidentificationalgorithmsformulti-armed
+banditsinthefixedconfidencesetting.In201448thAnnualConferenceonInformationSciences
+andSystems(CISS).IEEE,Princeton,NJ,USA,1–6. https://doi.org/10.1109/CISS.
+2014.6814096
+[27] DonaldB.Johnson.1975. FindingAlltheElementaryCircuitsofaDirectedGraph. SIAMJ.
+Comput.4,1(March1975),77–84. doi: 10.1137/0204007.
+[28] HirokiKanezashi,ToyotaroSuzumura,XinLiu,andTakahiroHirofuchi.2022. EthereumFraud
+Detection with Heterogeneous Graph Neural Networks. http://arxiv.org/abs/2203.
+12363 arXiv:2203.12363[cs].
+[29] GuolinKe,QiMeng,ThomasFinley,TaifengWang,WeiChen,WeidongMa,QiweiYe,and
+Tie-YanLiu.2017. Lightgbm: Ahighlyefficientgradientboostingdecisiontree. Advancesin
+neuralinformationprocessingsystems30(2017),3146–3154.
+[30] Thomas N. Kipf and Max Welling. 2017. Semi-Supervised Classification with Graph Con-
+volutional Networks. In International Conference on Learning Representations. https:
+//openreview.net/forum?id=SJU4ayYgl
+[31] Manish Kumar and et al. 2018. What are some good sources of data
+for Anti Money Laundering research? https://www.quora.com/
+What-are-some-good-sources-of-data-for-Anti-Money-Laundering-research
+12
+
+===== PAGE 13 =====
+[32] Xuan Li, Kunfeng Wang, Yonglin Tian, Lan Yan, and Fei-Yue Wang. 2017. The Par-
+allelEye Dataset: Constructing Large-Scale Artificial Scenes for Traffic Vision Research.
+https://arxiv.org/abs/1712.08394(December2017).
+[33] GuimeiLiu,KelvinSim,andJinyanLi.2006. EfficientMiningofLargeMaximalBicliques. In
+DataWarehousingandKnowledgeDiscovery.Vol.4081.SpringerBerlinHeidelberg,Berlin,
+Heidelberg, 437–448. https://doi.org/10.1007/11823728_42 Series Title: Lecture
+NotesinComputerScience.
+[34] XiaoFanLiu,Xin-JianJiang,Si-HaoLiu,andChiKongTse.2021. KnowledgeDiscovery
+inCryptocurrencyTransactions: ASurvey. IEEEAccess9(2021), 37229–37254. https:
+//doi.org/10.1109/ACCESS.2021.3062652
+[35] YangLiu, XiangAo, ZidiQin, JianfengChi, JinghuaFeng, HaoYang, andQingHe.2021.
+Pick and Choose: A GNN-Based Imbalanced Learning Approach for Fraud Detection. In
+ProceedingsoftheWebConference2021(Ljubljana,Slovenia)(WWW’21).Associationfor
+Computing Machinery, New York, NY, USA, 3168–3177. https://doi.org/10.1145/
+3442381.3449989
+[36] YangLiu,XiangAo,ZidiQin,JianfengChi,JinghuaFeng,HaoYang,andQingHe.2021. Pick
+andchoose: aGNN-basedimbalancedlearningapproachforfrauddetection.InProceedingsof
+thewebconference2021.3168–3177.
+[37] EdgarAlonsoLopez-Rojas,AhmadElmir,andStefanAxelsson.2016. Paysim: AFinancial
+Mobile Money Simulator for Fraud Detection. In 28th European Modeling and Simulation
+Conference(EMSS), (Ed.).,Larnaca,Cyprus.
+[38] Maryam Mahootiha. 2020. money laundering data. (2020).
+https://www.kaggle.com/datasets/maryam1212/money-laundering-data.
+[39] Maryam Mahootiha. 2020. money laundering data production. (2020).
+https://web.archive.org/web/20200916200819/https://github.com/mahootiha-
+maryam/moneylaundering-data-production.
+[40] Neuromation.2019. https://neuromation.io/marketplace.(2019).
+[41] Board of Governors of the Federal Reserve System. 2018. Changes in U.S. Pay-
+ments Fraud from 2012 to 2016: Evidence from the Federal Reserve Payments Study.
+(2018). https://www.federalreserve.gov/publications/files/changes-in-us-payments-fraud-from-
+2012-to-2016-20181016.pdf.
+[42] U.S. Bureau of Labor Statistics. 2023. Civilian labor force participation rate. (2023).
+https://www.bls.gov/charts/employment-situation/civilian-labor-force-participation-rate.htm.
+[43] AldoPareja,GiacomoDomeniconi,JieChen,TengfeiMa,ToyotaroSuzumura,HirokiKaneza-
+shi,TimKaler,TaoB.Schardl,andCharlesE.Leiserson.2020. EvolveGCN:EvolvingGraph
+ConvolutionalNetworksforDynamicGraphs. (2020). https://arxiv.org/abs/1902.10191.
+[44] Patki_et_al.2016. TheSyntheticDataVault. IEEEInternationalConferenceonDataScience
+andAdvancedAnalytics(October2016).
+[45] Peng_et_al. 2015. Learning Deep Object Detectors from 3D Models.
+https://arxiv.org/abs/1412.7122(October2015).
+[46] ErichPrisner.2000. BicliquesinGraphsI:BoundsonTheirNumber. Combinatorica20,1(Jan.
+2000),109–117. https://doi.org/10.1007/s004930070035
+[47] SusieXiRao,ShuaiZhang,ZhichaoHan,ZitaoZhang,WeiMin,ZhiyaoChen,YinanShan,
+YangZhao,andCeZhang.2021. xFraud: explainablefraudtransactiondetection. PVLDB15,
+3(Nov.2021),427–436. https://doi.org/10.14778/3494124.3494128
+[48] IBMResearch.2022. GraphFeaturePreprocessorPyPIDocumentation. https://snapml.
+readthedocs.io/en/latest/graph_preprocessor.html Accessed: 2023-01-10.
+13
+
+===== PAGE 14 =====
+[49] IBM Research. 2022. Snap ML PyPI package. https://pypi.org/project/snapml/
+Accessed: 2023-01-10.
+[50] IBM Research. 2023. IBM Transactions for Anti Money Launder-
+ing (AML). https://www.kaggle.com/datasets/ealtman2019/
+ibm-transactions-for-anti-money-laundering-aml Accessed: 2023-02-28.
+[51] AtlantaFederalReserve.2019. 2019SurveyofConsumerPaymentChoice.(2019).
+[52] Ben Roshan. 2021. Transaction Fraud Detection: Automating money laundering
+alerts. https://medium.com/analytics-vidhya/transaction-fraud-detection-%
+EF%B8%8F-%EF%B8%8F-automating-money-laundering-alerts-8d7d265befa9
+[53] DonaldRubin.1993. Discussion: StatisticalDisclosureLimitation. JournalofOfficialStatistics
+9,2(January1993).
+[54] UnitedStatesInternalRevenueService.2018. 2018Salary,Pension,andOtherData. (2018).
+https://www.irs.gov/pub/irs-soi/18in14ar.xls.
+[55] MicheleStarnini,CharalamposE.Tsourakakis,MaryamZamanipour,AndréPanisson,Walter
+Allasia,MarcoFornasiero,LauraLiPuma,ValeriaRicci,SilviaRonchiadin,AngelaUgrinoska,
+MarcoVaretto, andDarioMoncalvo.2021. Smurf-BasedAnti-moneyLaunderinginTime-
+EvolvingTransactionNetworks. InMachineLearningandKnowledgeDiscoveryinDatabases.
+AppliedDataScienceTrack.Vol.12978.SpringerInternationalPublishing,Cham,171–186.
+https://doi.org/10.1007/978-3-030-86514-6_11
+[56] MicheleStarnini,CharaalamposE.Tsourakakis,MaryamZamanipour,AndréPanisson,Walter
+Allasia,MarcoFornasiero,LauraLiPuma,ValeriaRicci,SilviaRonchiadin,AngelaUgrinoska,
+MarcoVaretto, andDarioMoncalvo.2021. Smurf-basedAnti-MoneyLaunderinginTime-
+Evolving Transaction Networks. In Joint European Conference on Machine Learning and
+KnowledgeDiscoveryinDatabases(ECMLPKDD), (Ed.).ACM,Bilbao, Spain, 171–186.
+https://doi.org/10.1007/978-3-030-86514-6_11
+[57] ToyotaroSuzumuraandHirokiKanezashi.2021. Anti-MoneyLaunderingDatasets. (2021).
+https://github.com/IBM/AMLSim.
+[58] ToyotaroSuzumuraandHirokiKanezashi.2021. Anti-MoneyLaunderingDatasets: InPlusLab
+Anti-MoneyLaunderingDataDatasets. http://github.com/IBM/AMLSim/.
+[59] Petar Velicˇkovic´, Guillem Cucurull, Arantxa Casanova, Adriana Romero, Pietro Liò, and
+Yoshua Bengio. 2018. Graph Attention Networks. International Conference on Learning
+Representations(2018). https://openreview.net/forum?id=rJXMpikCZ
+[60] PetarVelickovic,WilliamFedus,WilliamLHamilton,PietroLiò,YoshuaBengio,andRDevon
+Hjelm.2019. DeepGraphInfomax. ICLR(Poster)2,3(2019),4.
+[61] Austin Walters. 2018. Why You Don’t Necessarily Need Data for Data Science.
+(2018). https://medium.com/capitalonetech/whyyoudontnecessarilyneeddatafordatascience-
+48d7bf503074.
+[62] JianianWang,ShengZhang,YanghuaXiao,andRuiSong.2021. AReviewonGraphNeural
+NetworkMethodsinFinancialApplications. CoRRabs/2111.15367(2021). arXiv:2111.15367
+https://arxiv.org/abs/2111.15367
+[63] MarkWeber,JieChen,ToyotaroSuzumura,AldoPareja,TengfeiMa,HirokiKanezashi,Tim
+Kaler,CharlesE.Leiserson,andTaoB.Schardl.2018.ScalableGraphLearningforAnti-Money
+Laundering: AFirstLook. (2018). https://arxiv.org/abs/1812.00076.
+[64] Mark Weber, Giacomo Domeniconi, Jie Chen, Daniel Karl I Weidele, Claudio Bellei, Tom
+Robinson,andCharlesELeiserson.2019. Anti-moneylaunderinginbitcoin: Experimenting
+withgraphconvolutionalnetworksforfinancialforensics. arXivpreprintarXiv:1908.02591
+(2019).
+14
+
+===== PAGE 15 =====
+[65] KeyuluXu,WeihuaHu,JureLeskovec,andStefanieJegelka.2018. Howpowerfularegraph
+neuralnetworks? arXivpreprintarXiv:1810.00826(2018).
+[66] TianxiangZhao,XiangZhang,andSuhangWang.2021. Graphsmote: Imbalancednodeclassi-
+ficationongraphswithgraphneuralnetworks.InProceedingsofthe14thACMinternational
+conferenceonwebsearchanddatamining.833–841.
+15
+
+===== PAGE 16 =====
+Supplementary Material
+A RealismofDataGeneration 16
+B EthicalUseoftheData 18
+C HyperparameterTuningofMachineLearningModels 18
+D GraphFeaturePreprocessorConfiguration 19
+E AdditionalGNNExperiments 20
+F AdditionalGBTExperiments 20
+G Datasheet 23
+G.1 Motivation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+G.2 Composition. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+G.3 CollectionProcess,Uses,DistributionandMaintenance . . . . . . . . . . . . . . . 24
+A RealismofDataGeneration
+As described in Section 3.5, we used AMLworld to create several synthetic AML datasets. The
+datasets are published on Kaggle [50] under a Community Data License Agreement. As noted
+previously, data is divided into two high-level groups: HI and LI. The HI datasets have slightly
+higherillicitratios(morelaundering)thanLI.BothHIandLIarefurtherdividedintosmall,medium,
+andlargedatasets,withlargehaving175M −180M transactions. Table4providesanumberof
+basicstatisticsaboutallsixKaggledatasets. Weincludemoredetailedanalysesbelow.
+Table4: PublicSyntheticDataStatistics. HI=HigherIllicit(morelaundering). LI=LowerIllicit.
+Small Medium Large
+Statistic HI LI HI LI HI LI
+#ofDaysSpanned 10 10 16 16 97 97
+#ofBankAccounts 515K 705K 2077K 2028K 2116K 2064K
+#ofTransactions 5M 7M 32M 31M 180M 176M
+#ofLaunderingTransactions 3.6K 4.0K 35K 16K 223K 100K
+LaunderingRate(1perNTrans) 981 1942 905 1948 807 1750
+Figure 7 histograms annualized transactions per account. It gives a micro view of how different
+entitiesdrivetheoveralltransactioncountsfoundinTable4. Figure7alsoprovidesatouchpointto
+realdata: numbersroughlyalignwithU.S.FederalReservedata[51]. Table5showsthedistribution
+oftransactionformatsusedinthedataset,suchasACH,wire,andcheque. Againnumberscorrespond
+roughlywithFederalReservestatistics[41].
+Table8breaksdownlaunderingtransactionsbetween(a)transactionsfollowingoneof8standard
+patternsdiscussedinSection3.2–inparticularFigure2;and(b)theintegrationtransactionsdisguised
+asotheractivities(e.g. employeepayrollorcompanysupplies).
+Aswithotherdata,webasesalaryandpensionamountsonrealdata,inthiscasefromtheUSInternal
+RevenueService[54]. Figure8showsthenumberofreturnsfiledforthe2018taxyearforeach
+amountofsalaryincomeandpensionincome. Havingproperdistributionofsalariesandpensionsin
+turnhelpsdriveaccuratemodelingandstatisticsfortransactionsizesandfrequency,asjustdiscussed.
+The$0topbininFigure8reflectsthefactthatsomepeoplehavenosalaryincomeornopension
+income. Beyondsalaryandpensionpeoplecanhaveincomefromothersourcessuchasinterestor
+dividends.
+16
+
+--- TABLE 1 on PAGE 16 ---
+Small |  | Medium |  | 
+HI | LI | HI | LI | HI
+10 | 10 | 16 | 16 | 97
+515K | 705K | 2077K | 2028K | 2116K
+5M | 7M | 32M | 31M | 180M
+3.6K | 4.0K | 35K | 16K | 223K
+981 | 1942 | 905 | 1948 | 807
+
+===== PAGE 17 =====
+Table5: DistributionoftransactioncountsbyformatinLI-Large.
+Format #Transactions Format #Transactions
+Cheque 69,720,485 Reinvestment 7,258,251
+CreditCard 49,923,366 Wire 6,346,402
+ACH 21,650,558 Bitcoin 3,601,817
+Cash 18,069,965
+Table6: Histogramof#ofnodes(accounts)inLI-Largelaunderingpatterns. GatherScatterhas2
+counts: (a)#ofnodesfromwhichinitialfundscome;(b)#ofnodestowhichfundsultimatelygo.
+#ofNodes Fan-out Fan-in Cycle Random Bipartite Stack Scatter-Gather Gather-Scatter
+Min Max (1) (2)
+1 2 50 47 72 70 72 87 54 67 67
+2 4 46 54 50 44 30 31 47 43 38
+4 8 53 54 84 79 62 56 64 61 55
+8 12 57 62 76 62 51 48 48 42 52
+12 18 71 62 16 23 62 37 63 71 72
+18 ∞ 0 0 0 0 0 0 0 0 0
+Table7: OccurrencecountforeachlaunderingpatterninLI-Large.
+Pattern PatternCount #TransinPattern Pattern PatternCount #TransinPattern
+Fan-out 277 2,014 Stack 259 3,239
+Fan-in 279 2,003 Random 278 1,831
+Cycle 298 2,326 Scatter-gather 276 4,202
+Bipartite 277 1,858 Gather-scatter 284 4,010
+Table8: LaunderingratesinLI-Large. Ratioisthetotaltransactioncountdividedbythelaundering
+transactioncount.
+Description #ofTrans Ratio
+LaunderingTrans. -Patterns 19,461 9,047
+LaunderingTrans. -Other 81,143 2,170
+LaunderingTrans. -Total 100,604 1,750
+Figure 8 indicates that there are about 3.4× as many returns showing salary income as pension
+income,althoughreturnscanshowboth3. Weassumeabout62.5%ofpeopleinourmodelshave
+salaries–matchingthevaluefromtheU.S.DepartmentofLaborforlaborforceparticipationofthe
+adultworkforce[42]. FollowingtheIRSratios,about18.3%ofthepopulationinourdatasetshas
+pensionincome,witharoundhalfofthosepensionersalsoreceivingasalary.
+3ForincometaxpurposesintheU.S.,salaryincomealsoincludestotalwagesforhourlyworkers.
+600 k 525 k
+500 k 414 k433 k
+400 k
+295 k
+300 k
+192 k
+200 k 121 k
+75 k
+100 k 0 9 k 0 15
+0
+stnuoccA
+fo
+#
+]1
+,0(
+]4
+,1(
+]01
+,4(
+]05
+,01(
+]001
+,05(
+]052
+,001(
+]k
+1
+,052(
+]k
+5
+,k
+1(
+]k
+52
+,k
+5(
+]
+001
+,k
+52(
+)∞
+,k
+001(
+# of Transactions
+Figure7: AnnualizedtransactionrateacrossaccountsinLI-Large.
+17
+
+--- TABLE 1 on PAGE 17 ---
+Format | #Transactions | Format | #Transactions
+Cheque
+CreditCard
+ACH
+Cash | 69,720,485
+49,923,366
+21,650,558
+18,069,965 | Reinvestment
+Wire
+Bitcoin | 7,258,251
+6,346,402
+3,601,817
+
+--- TABLE 2 on PAGE 17 ---
+PatternCount #TransinPattern | Pattern
+277 2,014
+279 2,003
+298 2,326
+277 1,858 | Stack
+Random
+Scatter-gather
+Gather-scatter
+
+--- TABLE 3 on PAGE 17 ---
+ |  |  |  | 525 k |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  | 414 k | 433 k |  |  | 
+ |  |  | 295 k |  |  |  |  |  |  | 
+ |  |  |  |  | 192 k |  |  |  |  | 
+ | 121 k | 75 k |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  | 9 k |  | 15
+ |  |  |  |  |  |  |  |  |  | 
+
+===== PAGE 18 =====
+20 M
+15 M
+10 M
+5 M
+0
+egnar
+ni
+snruter
+fo
+#
+0 k
+5
+k
+01
+k
+51
+k
+02
+k
+52
+k
+03
+k
+04
+k
+05
+k
+57
+k
+001
+k
+002
+k
+005
+M
+1
+M
+2
+M
+2
+M
+5
+M
+01
+M
+0001
+Salary
+Pension
+Income amount in USD
+Figure8: DistributionofU.S.taxreturnsfor2018bysalaryincomeandpensionincome.
+Table 9: Successive halving parameter configurations used for hyperparameter tuning of shared
+modelstrainedusingallbanksofadataset(Multi-bankmodels)andprivatemodelstrainedusingthe
+dataofasinglebank(Single-bankmodels).
+Multi-bankmodels Single-bankmodels
+Datasets Small Medium Large Medium Large
+x 1000 100 16 1000 100
+0
+η 2 2 2 1.5 2
+r 0.1 0.1 0.2 0.3 0.1
+0
+AdditionalstatisticsaboutourvirtualworldwereprovidedinSection3.5.
+B EthicalUseoftheData
+WeaddressedanumberethicsissuesinSection7. Weofferafewadditionalobservationshere.
+Ethicaluseofthedataincludesusingitforbenchmarkingandimprovingmodelsforthedetectionof
+moneylaunderingactivity. Weforeseesignificantpositivesocietalimpactsfromsuchusesofour
+data. Moneylaunderinghasahugecostforsocietyinitself,butmoreimportantly,moneylaundering
+enablesawholerangeofcriminalactivitiestocontinue,rangingfromphishingattackstohuman
+trafficking. Detectingmoneylaunderingtransactionscanhelpauthoritiesuncoversuchactivitiesand
+identifythecriminalsbehindthem. Additionally,thedatacouldbeusedforpretrainingdetection
+modelsbeforefine-tuningonrealdata.
+Giventhatthedatasetissynthetic,thereisnoriskofitcontainingpersonallyidentifiableinformation
+oroffensivecontent. Moreover,researchersdonotneedtotakespecialcarewithitsuse,butthey
+shouldbearinmindthatperformancemightnottranslateone-to-onetorealdata.
+C HyperparameterTuningofMachineLearningModels
+GBTBaselines. Weusesuccessivehalving[26]forthehyperparametertuningoftheLightGBMand
+XGBoostmodels.Successivehalvingstartsbyrandomlysamplingx modelparameterconfigurations.
+0
+Eachconfigurationofmodelparametersisevaluatedusingafractionr ≤1oftheinitialtrainingset.
+0
+Thealgorithmthenfindsthebestx /ηconfigurations,withη >1. Thesebestconfigurationsareused
+0
+inthenextroundofsuccessivehalvingusingafractionη×r ofthetrainset. Thisprocesscontinues
+0
+untilthefractionofthetrainingsetusedfortheevaluationreaches1. Weusedifferentsuccessive
+halvingconfigurationsfordifferentdatasets,asshowninTable9. Furthermore,theparameterranges
+fromwhichx initialparameterconfigurationsaresampledareshowninTable10.
+0
+GNNBaselines. WeusedrandomsamplingtoidentifyagoodrangeofGNNhyperparameters. A
+secondroundofrandomsamplingwasconductedwiththisnarrowerrangetopickourfinalsetof
+hyperparameters. We varied the following hyperparameters: the number of GNN layers, hidden
+embeddingsize,learningrate,dropout,andminorityclassweight(fortheweightedlossfunction).
+18
+
+--- TABLE 1 on PAGE 18 ---
+Salary | 
+Pension | 
+
+--- TABLE 2 on PAGE 18 ---
+Multi-bankmodels
+Small Medium Large
+1000 100 16
+2 2 2
+0.1 0.1 0.2
+
+===== PAGE 19 =====
+Table10: ModelparameterrangesusedatforthehyperparametertuningofGBTmodels. Thesmall
+parameterrange,indicatedwithRange-small,isonlyusedforhyperparametertuningofLightGBM
+models related to HI-Large and LI-Large datasets. The large parameter range shown in column
+Range-largeisusedforotherdatasets.
+LightGBM XGBoost
+Parameter Range-small Range-large Parameter Range
+num_round (32,512) (10,1000) num_round (10,1000)
+num_leaves (32,256) (1,16384) max_depth (1,15)
+learning_rate (0.001,0.01) 10(−2.5,−1) learning_rate 10(−2.5,−1)
+lambda_l2 (0.01,0.5) 10(−2,2) lambda 10(−2,2)
+scale_pos_weight (1,10) (1,10) scale_pos_weight (1,10)
+lambda_l1 10(0.01,0.5) 10(0.01,0.5) colsample_bytree (0.5,1.0)
+subsample (0.5,1.0)
+Theexactrangesweusedarelistedin11. Thenumberofrandomsampleswassettobetween10to
+50,dependingonthetrainingtimeofthemodelonaparticulardataset. Togetourfinalresults,we
+usethehyperparameterswiththebestvalidationscoretotrainfourmodelsinitializedwithdifferent
+randomseeds.
+Table11: ModelparameterrangesusedforhyperparametertuningofGNNmodels. Thehyperparam-
+eterswereoptimizedonthesmalldatasetsandusedforallGNNmodels.
+ParameterRanges GIN(+EU) PNA
+hiddenembeddingsize (16,72) (16,64)
+learningrate (0.005,0.05) (0.0001,0.002)
+numberofGNNlayers (2,4) (2,4)
+dropout (0,0.5) (0,0.2)
+minorityclassweight (6,8) (6,8)
+D GraphFeaturePreprocessorConfiguration
+TheGraphFeaturePreprocessor(GFP)processestransactionsrepresentedastemporaledgesina
+streamingfashion. Theinputofthispreprocessorisabatchoftemporaledgesthatthepreprocessor
+insertsintoitsin-memorydynamicgraphandextractsvariousgraphfeaturesfromthisgraph,suchas
+scatter-gatherpatterns,simplecycles,andvertexstatistics. Theoutputofthepreprocessoristhesame
+batchofedgeswiththeseadditionalgraph-basedfeatures. ThislibraryisavailableaspartoftheSnap
+MLlibrary[49],andtheexperimentsinthispaperwereperformedusingversion1.14ofSnapML.
+MoredetailsonGFPareavailableinthedocumentation[48].
+Thegraph-basedfeaturesforourexperimentsareextractedusingthebatchsizeof128. TheGFPis
+configuredtogeneratefeaturesbasedonscatter-gatherpatterns,temporalcycles,simplecyclesof
+lengthupto10,andvertexstatistics. WesettheGFPtouseatimewindowofsixhoursforscatter-
+gatherpatternsandatimewindowofonedayfortherestofthegraph-basedfeatures. Thevertex
+statisticfeaturesarecomputedusingthe"Amount"and"Timestamp"fieldsofthebasictransaction
+features(seeFigure1a). ThisconfigurationisusedforalldatasetsandexperimentsthatuseGFPin
+thispaper.
+For each dataset, GFP processes transactions in the increasing order of their timestamps. This
+orderingensuresthatthegraph-basedfeaturesforeachtransactionareextractedusingthepastdata.
+Asaresult,transactionsfromthetrainingsetwillnotcontaingraph-basedfeaturescomputedusing
+thevalidationortestsets. Processingtransactionsinsuchawaypreventsdataleakage.
+19
+
+--- TABLE 1 on PAGE 19 ---
+GIN(+EU)
+(16,72)
+(0.005,0.05)
+(2,4)
+(0,0.5)
+(6,8)
+
+===== PAGE 20 =====
+E AdditionalGNNExperiments
+OurGNNcodeisincludedwiththesupplementarymaterialandavailablepubliclyonGitHub4under
+anApacheLicense. TheGNNsareimplementedusingPyTorchGeometricversion2.3.1[21]and
+PyTorchversion2.0.1.
+AllthebaselineGNNexperimentswererunonaninternalclusteronNvidiaTeslaV100GPUs. Table
+12showstheruntimeswhentrainingthedifferentGNNbaselinesontheAMLSmallandMedium
+datasets. ThesizeoftheGNNmodelswaskeptthesame: 2GNNlayersandahiddenembedding
+sizeof64. ThetotalGPUtime,includinginitialexperimentsandhyperparameteroptimization,is
+estimatedtohavebeenaround1000GPUhours.
+Table12: Totaltrainingtimes(TTT)andinferenceperformanceinTransactionperSecond(TPS)for
+allGNNbaselinesontheAMLSmallandMediumdatasetsusinganNvidiaTeslaV100GPU.
+HI-Small LI-Small HI-Medium LI-Medium
+Model
+TTT(s) TPS TTT(s) TPS TTT(s) TPS TTT(s) TPS
+GIN 22703 17210 29655 15784 85652 7101 85994 7316
+GIN+EU 26046 11844 36625 11640 85753 4981 85887 5097
+PNA 27745 16557 39648 14994 85654 6725 85827 6819
+InadditiontotheminorityclassF1scoresinTable2,weincludemorefine-grainedresultsdetailingthe
+precisionandrecallratesoftheGNN-basedmodels. Precisionevaluatestheaccuracyoflaundering
+predictions,recallmeasuresthemodel’sabilitytoidentifyalllaunderinginstances,whiletheF1score
+istheharmonicmeanofprecisionandrecall. Table13showsthelaunderingrecallratesandTable
+14showsthecorrespondingprecisionscores. InFigure9,wegiveexampleprecision-recallcurves,
+whichvisuallycapturethetrade-offbetweenprecisionandrecallacrossdifferentdecisionthresholds.
+Theexamplesaretakenfromthebest-performingseedfromthebest-performingmodel(PNA)onall
+smallandmediumAMLdatasets.
+Table13: Minorityclassrecallrate(%)fortheGNN-basedmodels. HIindicatesahigherillicitratio.
+LIindicatesalowerillicitratio.
+Model HI-Small LI-Small HI-Medium LI-Medium
+GIN[65,25] 38.16±5.92 14.59±2.37 39.86±3.61 8.07±9.32
+GIN+EU[11,15] 55.41±5.96 23.26±2.87 48.06±6.45 5.51±6.82
+PNA[60] 53.15±2.26 16.43±2.62 47.42±4.30 20.44±0.66
+Table14: Minorityclassprecision(%)fortheGNN-basedmodels. HIindicatesahigherillicitratio.
+LIindicatesalowerillicitratio.
+Model HI-Small LI-Small HI-Medium LI-Medium
+GIN[65,25] 27.40±7.98 5.14±3.42 47.78±5.20 5.23±3.60
+GIN+EU[11,15] 42.29±10.69 21.60±10.83 52.56±8.27 12.13±19.35
+PNA[60] 58.48±10.67 17.37±5.80 69.12±4.26 36.50±10.51
+F AdditionalGBTExperiments
+Figure11showstheprecision-recallcurvesforXGBoostmodelstrainedonallAMLdatasetsusing
+graph-based features created with Graph Feature Preprocessor. These curves correspond to the
+resultsfromtherow"GFP+XGBoost"showninTable2. Thesteepslopeofeachcurveafterthe
+reddot,whichrepresentadatapointobtainedusingthepredictionthresholdof0.5,indicatesthatit
+ischallengingtoobtainhigherrecallwithoutsignificantlydegradingtheprecision. Notethatitis
+possibletoachievehigherprecisionoftheseXGBoostmodelsbysimplyreducingtherecallbyafew
+percent.
+4https://github.com/IBM/Multi-GNN
+20
+
+--- TABLE 1 on PAGE 20 ---
+38.16±5.92 | 14.59±2.37 | 39.86±3.61 | 8.07±9.32
+55.41±5.96 | 23.26±2.87 | 48.06±6.45 | 5.51±6.82
+53.15±2.26 | 16.43±2.62 | 47.42±4.30 | 20.44±0.66
+
+--- TABLE 2 on PAGE 20 ---
+27.40±7.98 | 5.14±3.42 | 47.78±5.20 | 5.23±3.60
+42.29±10.69 | 21.60±10.83 | 52.56±8.27 | 12.13±19.35
+58.48±10.67 | 17.37±5.80 | 69.12±4.26 | 36.50±10.51
+
+===== PAGE 21 =====
+(a)HI-Small (b)LI-Small
+(c)HI-Medium (d)LI-Medium
+Figure9: Precision-RecallCurvesforthebest-performingPNAmodelforallAMLdatasets. Thered
+dotindicatestheF1scoreobtainedusingthepredictionthresholdof0.5.
+100%
+80%
+60%
+40%
+20%
+0%
+1 3 5 7 9 11 31 51 71 91 12 32 52 72 92
+100%
+80%
+60%
+40%
+20%
+0%
+Bank ID
+1 3 5 7 9 11 31 51 71 91 12 32 52 72 92
+Private graph, private model Private graph, shared model Shared graph, shared model
+Bank ID
+erocs
+1F
+ssalc-ytironiM
+gva
+(a) (b)
+gva
+Figure10: EffectofsharingthedataandLightGBMmodelsacrossbanksforthe(a)LI-Mediumand
+(b)LI-Largedatasets.
+Figure10showsperformanceonaper-bankbasisusingtheLIdatasets. Theexperimentisexplained
+inSection4andtheplotisanalogoustoFigure6,buthereweareusingtheLI-MediumandLI-Large
+datasets. ThesedatasetcontainfewerillicittransactionscomparedtotheHI-MediumandHI-Large
+datasets(seeTable4). Therefore,itismorechallengingtobuildamachinelearningmodelforabank
+usingonlylocaldataoftheseLIdatasetscomparedtothebanksofHIdatasets. Inthiscase,the
+averageminority-classF1scoreacross30banksshowninFigure10isonly4.9%forLI-Mediumand
+8.7%forLI-Large. Nevertheless,theimprovementinminority-classF1scoreofthesharedgraph,
+sharedmodelcasecomparedtotheprivategraph,privatemodelcaseisstillsignificant. Sharing
+thetransactiongraphandtheglobalmodelacrossthebanksincreasestheaverageminority-classF1
+scoreto20.8%forLI-Mediumandto22.1%forLI-Large.
+21
+
+===== PAGE 22 =====
+(a)HI-Small (b)LI-Small
+(c)HI-Medium (d)LI-Medium
+(e)HI-Large (f)LI-Large
+Figure 11: Precision-Recall Curves for the XGBoost models for all AML datasets trained using
+graph-based features of GFP. The red dot indicates the F1 score obtained using the prediction
+thresholdof0.5.
+22
+
+===== PAGE 23 =====
+G Datasheet
+WeincludeadatasheetbasedontheframeworksetforwardbyGebruetal.[22]. Somepartsofthe
+proposeddatasheetareomittedsinceourdatasetsaresynthetic.
+G.1 Motivation
+Forwhatpurposewasthedatasetcreated? Thedatasetwascreatedtotest,develop,andimprove
+machine-learningmodelsforfinancialcrimedetection. Inparticular,thedatasetsfocusonidentifying
+moneylaunderingtransactions.
+Whocreatedthedatasetandonbehalfofwhichentity? ErikAltmanonbehalfofIBM.
+Whofundedthecreationofthedataset? IBM
+G.2 Composition
+Whatdotheinstancesthatcomprisethedatasetrepresent? Thedatasetsaresyntheticfinancial
+transactionnetworks. Eachnodeinthenetworkrepresentsanaccount/entityandeachdirectededge
+representsatransactionfromoneaccounttoanother. Edgefeaturesdetailtheamount,currency,and
+typeoftransactionamongstotherproperties. Thedatasetsalsocontaintransactionsthatarelabeled
+asmoneylaundering. Alltheinformationissimulated. Norealaccountortransactiondetailswere
+usedtocreatethedatasets.
+Howmanyinstancesarethereintotal? Thereare6datasets. Eachdatasetconsistsofonegraph.
+Thenumberoftransactions(samples)rangesfrom5Mto180M.
+Doesthedatasetcontainallpossibleinstancesorisitasample(notnecessarilyrandom)of
+instancesfromalargerset? Thedatasetsaresynthetic. Anynumberoftransactionscouldbe
+generated.
+Whatdatadoeseachinstanceconsistof? Whenusedfortransactionclassification,theedges
+canbeconsideredinstances. Eachinstanceconsistsofasetoftransactionfeatures(incl.,amount,
+currency,date,time,andtype).Inaddition,eachtransactionispartofawholenetworkoftransactions,
+andsincethenetworktopologyplaysanimportantrole,thepositionoftheinstanceinthewhole
+networkcouldbeconsidereda"part"oftheinstance.
+Istherealabelortargetassociatedwitheachinstance? Yes.
+Isanyinformationmissingfromindividualinstances? No.
+Arethererecommendeddatasplits(e.g.,training,development/validation,testing)? Yes.
+Arethereanyerrors,sourcesofnoise,orredundanciesinthedataset? Nottotheknowledgeof
+theauthors.
+Is the dataset self-contained, or does it link to or otherwise rely on external resources (e.g.,
+websites,tweets,otherdatasets)? Thedatasetisself-contained.
+Does the dataset contain data that might be considered confidential (e.g., data that is pro-
+tectedbylegalprivilegeorbydoctor–patientconfidentiality,datathatincludesthecontentof
+individuals’non-publiccommunications)? No.
+Doesthedatasetcontaindatathat,ifvieweddirectly,mightbeoffensive,insulting,threatening,
+ormightotherwisecauseanxiety? No.
+23
+
+===== PAGE 24 =====
+G.3 CollectionProcess,Uses,DistributionandMaintenance
+PleaserefertoSection4andAppendixAfordetailsaboutthegenerationprocess. Thecurrentusage
+isdetailedinthepaperandpotentialusesaredescribedinAppendixB.TheKagglepageactsasthe
+singlesourceofdistribution[50]. Thedatasetwillbemaintainedthere.
+24
+

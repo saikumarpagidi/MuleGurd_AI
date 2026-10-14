@@ -1,0 +1,24 @@
+2026-09-16 14:49:05,653 | INFO     | ========================================================================================
+2026-09-16 14:49:05,653 | INFO     | MuleGuard.AI — Autoencoder final Training Pipeline (Isolated Staging)
+2026-09-16 14:49:05,653 | INFO     | ========================================================================================
+2026-09-16 14:49:05,653 | INFO     | Isolation: all artifacts → C:\Users\INP\Documents\MuleGurd_AI\ml\models\autoencoder_final / C:\Users\INP\Documents\MuleGurd_AI\ml\reports\autoencoder_final
+2026-09-16 14:49:05,653 | INFO     | Existing v2 model at ml/models/autoencoder/ is NEVER touched.
+2026-09-16 14:49:05,654 | INFO     | [mem:startup] RAM 30.8%  (21.0/68.3 GB)
+2026-09-16 14:49:05,654 | INFO     | Loading features_autoencoder.parquet (C:\Users\INP\Documents\MuleGurd_AI\ml\data\processed\features_autoencoder_full_final.parquet) ...
+2026-09-16 14:49:21,670 | INFO     |   Loaded 31,898,238 rows | fraud: 35,230 | legit: 31,863,008  (16.0s)
+2026-09-16 14:49:21,671 | INFO     | [mem:after parquet load] RAM 44.3%  (30.3/68.3 GB)
+2026-09-16 14:49:21,671 | INFO     | Computing row-fraction split boundaries ...
+2026-09-16 14:49:21,672 | INFO     | Row-fraction split (matches train_lgbm_aml.py OOT_SPLIT_FRACTION=0.2): train rows 0..22,966,731 | validation rows 22,966,731..25,518,590 | OOT test rows 25,518,590..31,898,238
+2026-09-16 14:49:25,330 | INFO     | Counting temporal partitions ...
+  Partition counts: train=22,944,867 legit | val=2,549,133 legit | test=6,379,648 total (10,640 fraud, 6,369,008 legit)
+2026-09-16 14:49:25,331 | INFO     | Writing binary cache to C:\Users\INP\Documents\MuleGurd_AI\ml\data\processed\autoencoder_final_cache ...
+2026-09-16 14:49:55,699 | INFO     |   Feature cache written in 30.4s
+2026-09-16 14:49:55,935 | INFO     | Cache: train=22,944,867 | val=2,549,133 | test=6,379,648 (10,640 fraud)
+2026-09-16 14:49:55,936 | INFO     | [mem:after cache load] RAM 42.3%  (28.9/68.3 GB)
+2026-09-16 14:49:55,936 | INFO     | Fitting scaler from training-window legitimate transactions only.
+2026-09-16 14:49:59,867 | INFO     | Resource guardrail: torch.set_num_threads(30) (reserving 2 cores for system stability)
+2026-09-16 14:49:59,870 | INFO     | Model: 21→128→64→12→64→128→21  | params=24,481 | device=cpu
+2026-09-16 14:50:00,650 | INFO     | Training on 22,944,867 legitimate transactions (cpu).
+2026-09-16 14:50:50,099 | INFO     | Epoch 01/20 | train Huber 0.074089 | val MSE 0.113708 | 49.4s
+2026-09-16 14:51:42,638 | INFO     | Epoch 02/20 | train Huber 0.030360 | val MSE 0.090079 | 52.5s
+2026-09-16 14:52:35,669 | INFO     | Epoch 03/20 | train Huber 0.024133 | val MSE 0.067968 | 53.0s
